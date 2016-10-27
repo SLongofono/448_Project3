@@ -3,6 +3,7 @@ import spotipy
 import spotipy.util as util
 import time
 import pprint
+import traceback
 
 labels = ['artists', 'genres', 'popularity', 'acousticness', 'danceability', 'energy', 'instrumentalness', 'key', 'liveness', 'valence']
 scope = 'user-library-read'
@@ -45,26 +46,31 @@ def getSongsUser(sp, limit=20, index=0):
         an integer representing overall popularity rating.  This popularity is averaged (to account for weird collaborations).
 '''
 def getVectorFromTrack(sp, features, artists):
-    songArtists = []
-    genres = []
-    popularity = 0
-    for entry in artists:
-        artist = sp.artist(entry['id'])
-        for i in artist['genres']:
-            genres.append(str(i))
-        songArtists.append(str(artist['name']))
-        popularity += artist['popularity']
-    popularity /= len(artists)
-    trackVector = [
-    songArtists,
-    genres,
-    popularity,
-    features['acousticness'],
-    features['danceability'],
-    features['energy'],
-    features['instrumentalness'],
-    features['key'],
-    return '{{' + xs.join(',') + '}}'
+	songArtists = []
+	genres = []
+	popularity = 0
+	for entry in artists:
+		artist = sp.artist(entry['id'])
+		for i in artist['genres']:
+			genres.append(str(i))
+			temp = str(artist['name'])
+			if not temp in songArtists:
+				songArtists.append(str(artist['name']))
+			popularity += artist['popularity']
+			popularity /= len(artists)
+	trackVector = [
+		songArtists,
+		genres,
+		popularity,
+		features['acousticness'],
+		features['danceability'],
+		features['energy'],
+		features['instrumentalness'],
+		features['key'],
+		features['liveness'],
+		features['valence']
+		]
+	return trackVector
 
 '''
 @fn
@@ -75,14 +81,14 @@ def getVectorFromTrack(sp, features, artists):
         line.  Entries are separated by '###'.  Since artists and genres are lists, they are
         recorded within '{{' '}}' and delimited by ',,'.  For example, the list [1,2,3] would
         be encoded as {{1,,2,,3}}
-'''
+
 def dumpSongVectors(vectors):
     x = open('SongVectors.txt', 'w')
     for i in labels:
     return trackVector
 
     return '{{' + xs.join(',') + '}}'
-
+'''
 '''
 @fn
 @brief Write a list of song vectors to file for processing
@@ -96,8 +102,8 @@ def dumpSongVectors(vectors):
 def dumpSongVectors(vectors):
     x = open('SongVectors.txt', 'w')
     for i in labels:
-        x.write(i)
-        x.write('###')
+    	x.write(i)
+    	x.write('###')
     x.write('\n')
     for vector in vectors:
         # Write artists and genres lists in a special format we can easily parse later
@@ -123,38 +129,47 @@ def dumpSongVectors(vectors):
         method will abandon its task after 3 failures
 '''
 def getUserSongs(user):
-    usageToken = util.prompt_for_user_token(user, scope)
-    if usageToken:
-        errorCount = 0
-        arties = None
-        trackid = None
-        sp = spotipy.Spotify(auth=usageToken)
-        vectors = []
-        for i in range (10):
-            try:
-                library = getSongsUser(sp, index=(20*i))
-                for item in library['items']:
-                    trackid = item['track']['id']
-                    arties = item['track']['artists']
-                    temp = getVectorFromTrack(sp, sp.audio_features([trackid])[0], arties)
-                    vectors.append(temp)
-                    time.sleep(1)
-            except:
-                    # get out if we continually fail to keep things moving upstream
-                    errorCount += 1
-                    if errorCount >= 3:
-                        break
-        return vectors
-
-    else:
-    	print "Could not retrieve token for ", user
-    	sys.exit()
+	usageToken = util.prompt_for_user_token(user, scope)
+	if usageToken:
+		errorCount = 0
+		arties = None
+		trackid = None
+		sp = spotipy.Spotify(auth=usageToken)
+		vectors = []
+		# Fetch up to the first 1000 songs to establish a data set
+		for i in range (50):
+			try:
+				print "Getting batch..."
+				library = getSongsUser(sp, index=(20*i))
+				print "Processing songs..."
+				if len(library['items']) > 0:
+					for item in library['items']:
+						trackid = item['track']['id']
+						arties = item['track']['artists']
+						temp = getVectorFromTrack(sp, sp.audio_features([trackid])[0], arties)
+						vectors.append(temp)
+				else:
+					#Delay so we don't get locked out of API
+					time.sleep(0.5)
+			except:
+				# get out if we continually fail
+				print "Error!"
+				traceback.print_exc()
+				errorCount += 1
+				if errorCount >= 3:
+					break
+		return vectors
+	else:
+		print "Could not retrieve token for ", user
+		sys.exit()
 
 if __name__ == '__main__':
     if len(sys.argv) > 1:
-    	user = sys.argv[1]
-        songs = getUserSongs(user)
-        dumpSongVectors(songs)
+		user = sys.argv[1]
+		print "getting songs..."
+		songs = getUserSongs(user)
+		print "Dumping songs..."
+		dumpSongVectors(songs)
     else:
     	print "Usage: %s username" % (sys.argv[0],)
     	sys.exit()
