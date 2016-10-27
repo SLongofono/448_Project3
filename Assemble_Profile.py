@@ -53,7 +53,9 @@ def getVectorFromTrack(sp, features, artists):
 		artist = sp.artist(entry['id'])
 		for i in artist['genres']:
 			genres.append(str(i))
-			songArtists.append(str(artist['name']))
+			temp = str(artist['name'])
+			if not temp in songArtists:
+				songArtists.append(str(artist['name']))
 			popularity += artist['popularity']
 			popularity /= len(artists)
 	trackVector = [
@@ -64,7 +66,9 @@ def getVectorFromTrack(sp, features, artists):
 		features['danceability'],
 		features['energy'],
 		features['instrumentalness'],
-		features['key']
+		features['key'],
+		features['liveness'],
+		features['valence']
 		]
 	return trackVector
 
@@ -100,7 +104,7 @@ def dumpSongVectors(vectors):
     for i in labels:
     	x.write(i)
     	x.write('###')
-    	x.write('\n')
+    x.write('\n')
     for vector in vectors:
         # Write artists and genres lists in a special format we can easily parse later
         x.write('{{' + ',,'.join(vector[0]) + '}}')
@@ -132,26 +136,28 @@ def getUserSongs(user):
 		trackid = None
 		sp = spotipy.Spotify(auth=usageToken)
 		vectors = []
-		for i in range (10):
+		# Fetch up to the first 1000 songs to establish a data set
+		for i in range (50):
 			try:
 				print "Getting batch..."
 				library = getSongsUser(sp, index=(20*i))
 				print "Processing songs..."
-				print "Iteration ", i
-				for item in library['items']:
-					trackid = item['track']['id']
-					arties = item['track']['artists']
-					temp = getVectorFromTrack(sp, sp.audio_features([trackid])[0], arties)
-					vectors.append(temp)
-					print temp
-					time.sleep(2)
+				if len(library['items']) > 0:
+					for item in library['items']:
+						trackid = item['track']['id']
+						arties = item['track']['artists']
+						temp = getVectorFromTrack(sp, sp.audio_features([trackid])[0], arties)
+						vectors.append(temp)
+				else:
+					#Delay so we don't get locked out of API
+					time.sleep(0.5)
 			except:
-				# get out if we continually fail to keep things moving upstream
+				# get out if we continually fail
 				print "Error!"
 				traceback.print_exc()
-				#errorCount += 1
-				#if errorCount >= 3:
-				#break
+				errorCount += 1
+				if errorCount >= 3:
+					break
 		return vectors
 	else:
 		print "Could not retrieve token for ", user
