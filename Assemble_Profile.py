@@ -57,7 +57,7 @@ def getVectorFromTrack(sp, features, artists):
 			if not temp in songArtists:
 				songArtists.append(str(artist['name']))
 			popularity += artist['popularity']
-			popularity /= len(artists)
+	popularity /= len(artists)
 	trackVector = [
 		songArtists,
 		genres,
