@@ -7,8 +7,6 @@ import traceback
 
 labels = ['artists', 'genres', 'popularity', 'acousticness', 'danceability', 'energy', 'instrumentalness', 'key', 'liveness', 'valence']
 scope = 'user-library-read'
-ARTISTS_INDEX = 0
-GENRES_INDEX  = 1
 
 '''
 @fn
@@ -30,7 +28,7 @@ def getSongFeatures(sp, ids):
 @return out A list of Spotify track objects associated with songs in the user's library
 @detail Fetches up to limit songs from the user's saved songs library, beginning at the index indicated.
 '''
-def getSongsUser(sp, limit=20, index=0):
+def getTracksUserAccount(sp, limit=20, index=0):
     return sp.current_user_saved_tracks(limit, index)
 
 '''
@@ -72,30 +70,17 @@ def getVectorFromTrack(sp, features, artists):
 		]
 	return trackVector
 
+
+
 '''
 @fn
 @brief Write a list of song vectors to file for processing
 @param in vectors A list of song vectors in the format produced by getVectorFromTrack()
 @return out void
 @detail Steps through the list of song vectors and writes each to SongVectors.txt on its own
-        line.  Entries are separated by '###'.  Since artists and genres are lists, they are
-        recorded within '{{' '}}' and delimited by ',,'.  For example, the list [1,2,3] would
-        be encoded as {{1,,2,,3}}
-
-def dumpSongVectors(vectors):
-    x = open('SongVectors.txt', 'w')
-    for i in labels:
-    return trackVector
-
-    return '{{' + xs.join(',') + '}}'
-'''
-'''
-@fn
-@brief Write a list of song vectors to file for processing
-@param in vectors A list of song vectors in the format produced by getVectorFromTrack()
-@return out void
-@detail Steps through the list of song vectors and writes each to SongVectors.txt on its own
-        line.  Entries are separated by '###'.  Since artists and genres are lists, they are
+        line.  This file represents the "database" of known liked songs for a user, against
+	which we can prepare a user profile and make decisions about new songs.
+	Entries are separated by '###'.  Since artists and genres are lists, they are
         recorded within '{{' '}}' and delimited by ',,'.  For example, the list [1,2,3] would
         be encoded as {{1,,2,,3}}
 '''
@@ -128,7 +113,7 @@ def dumpSongVectors(vectors):
         songs, or if some other errors are preventing the API calls from completing, the
         method will abandon its task after 3 failures
 '''
-def getUserSongs(user):
+def getUserSongVectors(user):
 	usageToken = util.prompt_for_user_token(user, scope)
 	if usageToken:
 		errorCount = 0
@@ -140,7 +125,7 @@ def getUserSongs(user):
 		for i in range (50):
 			try:
 				print "Getting batch..."
-				library = getSongsUser(sp, index=(20*i))
+				library = getTracksUserAccount(sp, index=(20*i))
 				print "Processing songs..."
 				if len(library['items']) > 0:
 					for item in library['items']:
@@ -163,11 +148,14 @@ def getUserSongs(user):
 		print "Could not retrieve token for ", user
 		sys.exit()
 
+
 if __name__ == '__main__':
     if len(sys.argv) > 1:
 		user = sys.argv[1]
+
 		print "getting songs..."
-		songs = getUserSongs(user)
+		songs = getUserSongVectors(user)
+
 		print "Dumping songs..."
 		dumpSongVectors(songs)
     else:
