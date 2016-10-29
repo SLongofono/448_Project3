@@ -5,7 +5,11 @@ import spotipy.util as util
 
 def getArtist(sp, artist, numTracks, startTrack):
 	return sp.search(artist, numTracks, startTrack, 'track')
-	
+
+def getArtistId(sp, artist):
+	temp = sp.search(q=artist, type='artist')
+	print temp['artists']['items'][0]['id']
+	return temp['artists']['items'][0]['id']
 
 def getSongFeatures(sp, ids):
 	return sp.audio_features(ids)
@@ -23,11 +27,19 @@ usageToken = util.prompt_for_user_token(user, scope)
 
 if usageToken:
 	sp = spotipy.Spotify(auth=usageToken)
-	results = getArtist(sp, 'Frank Zappa', 5, 0)['tracks']['items']
-	print "Frank Zappa tracks:"
+	artistObj = getArtist(sp, 'Frank Zappa',5, 0)
+	results = artistObj['tracks']['items']
+
+	print "Artist info: "
+	artie =  sp.artist(getArtistId(sp, 'Big Data'))
+	print "Name: ", artie['name']
+	print "Genres: ", artie['genres']
+	print "Popularity: ", artie['popularity']
+	print "Spotify Id: ", artie['id']
+
+	print artie['name'], "tracks:"
 	for entry in results:
 		print entry['artists'][0]['name'], ' : ', entry['name'], ' : ', entry['id']
-
 	firstTrack = results[0]
 	for a, b in firstTrack.iteritems():
 		print a
