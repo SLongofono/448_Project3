@@ -125,4 +125,3 @@ if __name__ == '__main__':
 
 	print "Most similar new song is: "
 	print bestSong, " with a total difference ", bestVal
-
