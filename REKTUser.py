@@ -2,6 +2,7 @@ import Mutators
 import traceback
 import Variance
 import functools
+import os
 
 class User():
     def __init__(self, logfile="userProfile.txt", debug=False):
@@ -82,13 +83,24 @@ class User():
 
 if __name__ == '__main__':
 
+	print "Test run..."
+
 	# Basic setup
+	print "Creating user..."
 	tester = User(debug=True)
+
+	print "User profile vector: "
 	tester.prettyPrintProfile()
-	tester.addData([['Katy MF Perry', 'Bob Marley, Bob Vila, and Bob Ross'], ['Death Pop', 'Icelandic glam-folk'], 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0])
+
+	print "Adding a new song vector: "
+	testSong = [['Katy MF Perry', 'Bob Marley, Bob Vila, and Bob Ross'], ['Death Pop', 'Icelandic glam-folk'], 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0]
+	print testSong
+	tester.addData(testSong)
+	print "Modified profile: "
 	tester.prettyPrintProfile()
+
+	print "Saving modified profile..."
 	tester.saveStatus()
-	tester.prettyPrintProfile()
 
 	# Comparison
 	# Build test cases
@@ -109,6 +121,8 @@ if __name__ == '__main__':
 			i
 			]
 		newSongs.append(newSong)
+
+	print "Generated test songs to compare against:"
 	for i in newSongs:
 		print i
 
@@ -116,12 +130,15 @@ if __name__ == '__main__':
 	bestSong = None
 	bestVal = 200000
 	for i in range(len(newSongs)):
-		print "New Song artist: ", newSongs[i][0][0]
-		print "New Song genre: ", newSongs[i][1][0]
-		print "New Song total difference: ", sum(diffs[i])
+		print "Artist: ", newSongs[i][0][0], " Difference: ", sum(diffs[i])
 		if sum(diffs[i]) < bestVal:
 			bestVal = sum(diffs[i])
 			bestSong = newSongs[i][0][0]
 
-	print "Most similar new song is: "
+	print "Most similar test song is: "
 	print bestSong, " with a total difference ", bestVal
+
+	print "Entering interactive demo..."
+
+	command = "python Compare_Songs"
+	os.system(command)

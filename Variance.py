@@ -67,7 +67,7 @@ def getVariance(base, new):
 
 
 if __name__ == '__main__':
-	print "No need to run this directly"
+	print "No need to run this directly, use getVariance() and pass in the user profile vector and the vector to be compared."
 	test1 = [['artist1', 'artist2', 'artist3'],['genre1', 'genre2', 'genre3'],0,0,0,0,0,0,0,0]
 	test2 = [['artist1'],['genre1', 'genre2'],1,2,3,4,5,6,7,8]
 	print getVariance(test1, test2)
