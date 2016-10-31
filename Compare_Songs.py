@@ -85,13 +85,16 @@ def compareNewReleases(user, lim=20, debug=False):
 		for album in results['albums']['items']:
 			tracks = sp.album_tracks(album['id'])
 			for track in tracks['items']:
-				featureVector = Assemble_Profile.getVectorFromTrack(sp, sp.audio_features([track['id']])[0], track['artists'])
-				vectors.append(featureVector)
+				try:
+					featureVector = Assemble_Profile.getVectorFromTrack(sp, sp.audio_features([track['id']])[0], track['artists'])
+					vectors.append(featureVector)
+				except: pass
 		
 		if debug:
 			print vectors
 			
 		return vectors
+		
 
 # a menu system to test the various comparison methods
 if __name__ == '__main__':
