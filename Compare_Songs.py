@@ -1,17 +1,18 @@
 import sys
 import spotipy
 import spotipy.util as util
-import REKTUser
 import Assemble_Profile
 
 ##@fn
-# @brief gets songs from a search query and returns a list of audio features 
+# @brief Gets songs from a search query and returns a list of audio features 
+# @param in user a user to establish a usageToken
 # @param in query a string to be used with the spotify search feature
-# @param in lim the number of search results to compare
-# @return out void
+# @param in lim the number of search results to retrieve
+# @param in debug prints debug info if true
+# @return out a list of vectorized versions of audio features
 # @detail searches spotify with the given query, and gets as many results as specified
-#         by the lim parameter. For each track, it compares the features to the set
-#         of aggravated preferences associated with the user and prints the results.
+#         by the lim parameter. For each track, it gets the audio features, converts it
+#         to a vector, and finally returns a list of all the vectors
 #
 def compareSearch(user, query, lim=20, debug=False):
 	usageToken = util.prompt_for_user_token(user, None)
@@ -30,16 +31,17 @@ def compareSearch(user, query, lim=20, debug=False):
 			print vectors
 		
 		return vectors
-		
+
 
 ##@fn
-# @brief Compares featured playlists with the user's agrregated preferences
-# @param in lim the number of playlists to compare
-# @return out void
+# @brief Gets songs from featured playlists and returns a list of audio features 
+# @param in user a user to establish a usageToken
+# @param in lim the number of playlists to retrieve
+# @param in debug prints debug info if true		
+# @return out a list of vectorized versions of audio features
 # @detail grabs a number of spotify's featured playlists, as specified by the lim
-#         parameter. For each track within each playlist, it compares the features
-#         to the set of aggravated preferences associated with the user and prints
-#         the results.
+#         parameter. For each track within each playlist, it gets the audio features,
+#         converts it to a vector, and finally returns a list of all the vectors
 #
 def compareFeatured(user, lim=20, debug=True):
 	usageToken = util.prompt_for_user_token(user, None)
@@ -63,15 +65,15 @@ def compareFeatured(user, lim=20, debug=True):
 			print vectors
 			
 		return vectors
-				
+
 
 ##@fn
 # @brief Compares new releases with the user's agrregated preferences
 # @param in lim the number of new releases to compare
-# @return out void
+# @return out a list of vectorized versions of audio features
 # @detail grabs a number of spotify's new releases, as specified by the lim
-#         parameter. For each track, it compares the features to the set of
-#         aggravated preferences associated with the user and print the results.
+#         parameter. For each track, it gets the audio features, converts it
+#         to a vector, and finally returns a list of all the vectors
 #
 def compareNewReleases(user, lim=20, debug=False):
 	usageToken = util.prompt_for_user_token(user, None)
