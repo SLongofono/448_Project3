@@ -1,8 +1,8 @@
-##@file Mutators.py 
+##@file Mutators.py
 # @brief A collection of functions used to incorporate new feature values into existing average values
 #
 
-##@fn
+##@fn Generic_Mutator
 # @brief Mutator functions define functions which track a list of values across calls
 # @param in vals An implicit list of values which this function will store dynamically.
 #                Should never be passed in explicitly.

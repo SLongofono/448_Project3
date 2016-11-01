@@ -19,7 +19,7 @@ import traceback
 labels = ['artists', 'genres', 'popularity', 'acousticness', 'danceability', 'energy', 'instrumentalness', 'key', 'liveness', 'valence']
 scope = 'user-library-read'
 
-##@fn
+##@fn getSongFeatures
 # @brief Get the track data object for each song from a list of song ids
 # @param in sp The handle to the Spotipy wrapper associated with the current user
 # @param in ids A list of Spotify song ids
@@ -29,7 +29,7 @@ scope = 'user-library-read'
 def getSongFeatures(sp, ids):
 	return sp.audio_features(ids)
 
-##@fn
+##@fn getTracksUserAccount
 # @brief Get the user's songs from their library
 # @param in sp The handle to the Spotipy wrapper associated with the current user
 # @param in limit Optional integer representing the number of tracks to fetch
@@ -41,7 +41,7 @@ def getTracksUserAccount(sp, limit=20, index=0):
     return sp.current_user_saved_tracks(limit, index)
 
 
-##@fn
+##@fn getVectorFromTrack
 # @brief Assembles a vector of feature values for a track
 # @param in sp The handle to the Spotipy wrapper associated with the current user
 # @param in features A Spotify feature object associated with the track in question
@@ -80,7 +80,7 @@ def getVectorFromTrack(sp, features, artists):
 	return trackVector
 
 
-##@fn
+##@fn dumpSongVectors
 # @brief Write a list of song vectors to file for processing
 # @param in vectors A list of song vectors in the format produced by getVectorFromTrack()
 # @return out void
@@ -110,7 +110,7 @@ def dumpSongVectors(vectors):
     x.close()
 
 
-##@fn
+##@fn getUserSongVectors
 # @brief Assembles a list of song vectors for a user
 # @param in user The spotify username of the user to fetch songs from
 # @return out A list of song vectors in the format produced by getVectorFromTrack()
@@ -159,10 +159,10 @@ if __name__ == '__main__':
     if len(sys.argv) > 1:
 		user = sys.argv[1]
 
-		print "getting songs..."
+		print "\n\nGetting songs..."
 		songs = getUserSongVectors(user)
 
-		print "Dumping songs..."
+		print "\n\nDumping songs..."
 		dumpSongVectors(songs)
     else:
     	print "Usage: %s username" % (sys.argv[0],)

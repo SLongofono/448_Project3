@@ -1,6 +1,10 @@
+##@file Variance.py
+#	@brief This file defines helper functions for evaluating and processing differences between song vectors
+#
+
 import math
 
-## @fn listVariance
+##@fn listVariance
 #  @brief Check if two lists are disjoint
 #  @param in base A list of values representing a set to check against
 #  @param in new A list of values to compare with base
@@ -19,7 +23,7 @@ def listVariance(base, new):
     return 1
 
 
-## @fn valueVariance
+##@fn valueVariance
 #  @brief Compute the absolute difference between two numerical values
 #  @param in base A numerical type feature from the user profile vector
 #  @param in new A numerical type feature from a new song vector
@@ -30,7 +34,7 @@ def valueVariance(base, new):
     return math.fabs(base-new)
 
 
-## @var compareVec
+##@var compareVec
 #  @brief A list of functions to compute variance of two vectors
 #  @detail compareVec holds references to functions to be applied when evaluating the
 #	feature-by-feature difference between two feature vectors.
@@ -49,7 +53,7 @@ compareVec = 	[
 		]
 
 
-## @fn getVariance
+##@fn getVariance
 #  @brief Apply the functions in compareVec to the values in base, new
 #  @param in base The user profile vector
 #  @param in new a list of features to compare against the user vector
@@ -65,7 +69,7 @@ def getVariance(base, new):
 	return results
 
 
-
+# Debugging and ad-hoc testing
 if __name__ == '__main__':
 	print "No need to run this directly, use getVariance() and pass in the user profile vector and the vector to be compared."
 	test1 = [['artist1', 'artist2', 'artist3'],['genre1', 'genre2', 'genre3'],0,0,0,0,0,0,0,0]
