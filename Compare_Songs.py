@@ -3,6 +3,8 @@ import spotipy
 import spotipy.util as util
 import Assemble_Profile
 
+scope = 'user-library-read'
+
 ##@fn
 # @brief Gets songs from a search query and returns a list of audio features 
 # @param in user a user to establish a usageToken
@@ -15,7 +17,7 @@ import Assemble_Profile
 #         to a vector, and finally returns a list of all the vectors
 #
 def compareSearch(user, query, lim=20, debug=False):
-	usageToken = util.prompt_for_user_token(user, None)
+	usageToken = util.prompt_for_user_token(user, scope)
 	if usageToken:
 		sp = spotipy.Spotify(auth=usageToken)
 		results = sp.search(query, limit=lim)
@@ -44,7 +46,7 @@ def compareSearch(user, query, lim=20, debug=False):
 #         converts it to a vector, and finally returns a list of all the vectors
 #
 def compareFeatured(user, lim=20, debug=True):
-	usageToken = util.prompt_for_user_token(user, None)
+	usageToken = util.prompt_for_user_token(user, scope)
 	if usageToken:
 		sp = spotipy.Spotify(auth=usageToken)
 		results = sp.featured_playlists(limit=lim)
@@ -76,7 +78,7 @@ def compareFeatured(user, lim=20, debug=True):
 #         to a vector, and finally returns a list of all the vectors
 #
 def compareNewReleases(user, lim=20, debug=False):
-	usageToken = util.prompt_for_user_token(user, None)
+	usageToken = util.prompt_for_user_token(user, scope)
 	if usageToken:
 		sp = spotipy.Spotify(auth=usageToken)
 		results = sp.new_releases(limit=lim)
