@@ -1,4 +1,4 @@
-##@file Toy_feature.py
+## @file Toy_feature.py
 # @brief An example of using the Spotipy module to authenticate
 # @author Paul Lamere
 # @details From the Spotipy documentation

@@ -1,4 +1,5 @@
-##@file FirstTime.py
+## @file FirstTime
+# First Time Script
 # @brief Parses a user's local song database and assembles a user profile vector.  Second step of
 #        setting up a user profile
 # @details This file is run after assembling a database of the user's songs, in order to establish

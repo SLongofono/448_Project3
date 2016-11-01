@@ -1,4 +1,5 @@
-##@file Assemble_Profile.py
+## @file Assemble_Profile.py
+# Assemble Profile script
 # @brief Prepares a database of song features from track objects on the user's Spotify account.  First step
 #        in setting up our recommendation system.
 # @details This script accesses the user's account and assembles up to the first 1000 songs in their library.
@@ -14,13 +15,13 @@ import time
 import pprint
 import traceback
 
-##@var labels
+## @var labels
 # @brief A human-friendly list of the features in a user/song profile vector
 labels = ['artists', 'genres', 'popularity', 'acousticness', 'danceability', 'energy', 'instrumentalness', 'key', 'liveness', 'valence']
 scope = 'user-library-read'
 
 
-##@fn dumpSongVectors
+##  dumpSongVectors
 # @brief Write a list of song vectors to file for processing
 # @param vectors A list of song vectors in the format produced by getVectorFromTrack()
 # @return void
@@ -50,7 +51,7 @@ def dumpSongVectors(vectors):
     x.close()
 
 
-##@fn getSongFeatures
+##  getSongFeatures
 # @brief Get the track data object for each song from a list of song ids
 # @param sp The handle to the Spotipy wrapper associated with the current user
 # @param ids A list of Spotify song ids
@@ -60,7 +61,7 @@ def dumpSongVectors(vectors):
 def getSongFeatures(sp, ids):
 	return sp.audio_features(ids)
 
-##@fn getTracksUserAccount
+##  getTracksUserAccount
 # @brief Get the user's songs from their library
 # @param sp The handle to the Spotipy wrapper associated with the current user
 # @param limit Optional integer representing the number of tracks to fetch
@@ -72,7 +73,7 @@ def getTracksUserAccount(sp, limit=20, index=0):
     return sp.current_user_saved_tracks(limit, index)
 
 	
-##@fn getUserSongVectors
+##  getUserSongVectors
 # @brief Assembles a list of song vectors for a user
 # @param user The spotify username of the user to fetch songs from
 # @return A list of song vectors in the format produced by getVectorFromTrack()
@@ -117,7 +118,7 @@ def getUserSongVectors(user):
 		sys.exit()
 
 
-##@fn getVectorFromTrack
+##  getVectorFromTrack
 # @brief Assembles a vector of feature values for a track
 # @param sp The handle to the Spotipy wrapper associated with the current user
 # @param features A Spotify feature object associated with the track in question

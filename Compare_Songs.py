@@ -1,14 +1,19 @@
+## @file Compare_Songs.py
+# Compare Songs
+# @brief Functions associated with the collection of tracks to compare against
+# @details This file describes the methods by which we collect songs to process
+#               against our user profile.
 import sys
 import spotipy
 import spotipy.util as util
 import Assemble_Profile
 
-##@var scope
+## @var scope
 # @brief describes the permissions associated with the authorization token
 scope = 'user-library-read'
 
 
-##@fn compareFeatured
+##  compareFeatured
 # @brief Gets songs from featured playlists and returns a list of audio features 
 # @param user a user to establish a usageToken
 # @param lim the number of playlists to retrieve
@@ -42,7 +47,7 @@ def compareFeatured(user, lim=20, debug=True):
 		return vectors
 
 
-##@fn compareNewReleases
+##  compareNewReleases
 # @brief Compares new releases with the user's agrregated preferences
 # @param lim the number of new releases to compare
 # @return A list of vectorized versions of audio features
@@ -71,7 +76,7 @@ def compareNewReleases(user, lim=20, debug=False):
 		return vectors
 
 
-##@fn compareSearch 
+##  compareSearch 
 # @brief Gets songs from a search query and returns a list of audio features 
 # @param user a user to establish a usageToken
 # @param query a string to be used with the spotify search feature

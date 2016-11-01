@@ -1,4 +1,4 @@
-##@file Toy_Playlist.py
+## @file Toy_Playlist.py
 # @brief An example of using the Spotipy module to create and access a playlist
 # @author Paul Lamere
 # @details From the Spotipy documentation

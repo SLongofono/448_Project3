@@ -1,6 +1,7 @@
-##@file REKTUser.py
+## @file REKTUser.py
+# REKTUser 
 # @author Stephen Longofono
-# @brief
+# @brief The user class for the recommendation system
 # @details This file defines the User class which is used to generate and manipulate a user profile from
 #         their Spotify profile
 
@@ -11,7 +12,7 @@ import functools
 import Compare_Songs
 
 
-##@class User
+## @class User
 # @brief Manages creation and manipulation of a Spotify user profile
 # @param debug An optional Boolean parameter specifying whether or not to run in verbose mode
 # @param logfile An optional filename for a test file containing a user profile vector
@@ -39,7 +40,7 @@ class User():
                             Mutators.valenceMutator
 			]
 
-	##@fn addData
+	##  addData
 	# @brief Processes a new song vector into the user profile vector
 	# @param newDataVector
 	# @return void
@@ -50,7 +51,7 @@ class User():
 		for i in range (len(self.addVector)):
 			self.addVector[i](newVal=newDataVector[i], debug=self.debug)
 
-	##@fn getSongDifferences
+	##  getSongDifferences
 	# @brief Returns a list of the featurewise differences of each of a list of new song vectors and the user profile vector
 	# @param newSongVectors A list of song vectors to compare against
 	# @return A list of lists representing the feature difference of each of the song vectors passed in.
@@ -60,7 +61,7 @@ class User():
 	def getSongDifferences(self, newSongVectors):
 		return  map(functools.partial(Variance.getVariance, self.profile),  newSongVectors)
 
-	##@fn prettyPrintProfile
+	##  prettyPrintProfile
 	# @brief Prints a user profile in a human-friendly way
 	# @return void
 	# @brief Prints a user profile in a human-friendly way (Label: value)
@@ -70,7 +71,7 @@ class User():
 			print self.profile[i]
 
 
-	##@fn processProfile
+	##  processProfile
 	# @brief Reads in a user profile from a local logfile
 	# @param filename The text document which contains the user profile vector information.
 	# @return void
@@ -91,7 +92,7 @@ class User():
 		x.close()
 
 
-	##@fn saveStatus
+	##  saveStatus
 	# @brief Saves the current user profile vector to disk
 	# @return void
 	# @details This method aggregates the new values in the mutator functions and writes them to
