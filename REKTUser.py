@@ -2,7 +2,7 @@ import Mutators
 import traceback
 import Variance
 import functools
-import os
+import Compare_Songs
 
 class User():
     def __init__(self, logfile="userProfile.txt", debug=False):
@@ -82,6 +82,9 @@ class User():
 
 
 if __name__ == '__main__':
+	import os
+	import sys
+	user = sys.argv[1]
 
 	print "Test run..."
 
@@ -138,7 +141,32 @@ if __name__ == '__main__':
 	print "Most similar test song is: "
 	print bestSong, " with a total difference ", bestVal
 
+	print "Fetching new releases to compare against..."
+#	newReleases = Compare_Songs.compareNewReleases(user, lim=5)
+	newReleases = Compare_Songs.compareSearch(user, query="Elvis Costello", lim=10)
+
+
+	print "New songs: "
+	print newReleases
+	for i in newReleases:
+		print i
+
+
+	diffs = tester.getSongDifferences(newReleases)
+	bestSong = None
+	bestVal = 200000
+	for i in range(len(newReleases)):
+		if len(newReleases[i][0]) > 0:
+			print "Artist: ", newReleases[i][0][0], " Difference: ", sum(diffs[i])
+			if sum(diffs[i]) < bestVal:
+				bestVal = sum(diffs[i])
+				bestSong = newReleases[i][0][0]
+
+	print "Most similar new song is: "
+	print bestSong, " with a total difference ", bestVal
+
+
 	print "Entering interactive demo..."
 
-	command = "python Compare_Songs"
+	command = "python Compare_Songs.py " + user
 	os.system(command)
