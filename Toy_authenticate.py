@@ -1,9 +1,9 @@
 ##@file Toy_authenticate.py
 # @brief An example of using the Spotipy module to authenticate
 # @author Paul Lamere
-# @detail From the Spotipy documentation
-#         Accessed October 2016
-#         https://spotipy.readthedocs.io
+# @details From the Spotipy documentation
+#             Accessed October 2016
+#             https://spotipy.readthedocs.io
 
 import sys
 import spotipy

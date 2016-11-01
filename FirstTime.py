@@ -1,7 +1,7 @@
 ##@file FirstTime.py
 # @brief Parses a user's local song database and assembles a user profile vector.  Second step of
 #        setting up a user profile
-# @detail This file is run after assembling a database of the user's songs, in order to establish
+# @details This file is run after assembling a database of the user's songs, in order to establish
 #         a profile vector for the user.  The profile vector is composed of the average value for
 #         numerical features, and two lists representing all the artists and all the genres among
 #         a user's set of songs.

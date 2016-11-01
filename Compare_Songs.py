@@ -3,45 +3,18 @@ import spotipy
 import spotipy.util as util
 import Assemble_Profile
 
+##@var scope
+# @brief describes the permissions associated with the authorization token
 scope = 'user-library-read'
 
-##@fn
-# @brief Gets songs from a search query and returns a list of audio features 
-# @param in user a user to establish a usageToken
-# @param in query a string to be used with the spotify search feature
-# @param in lim the number of search results to retrieve
-# @param in debug prints debug info if true
-# @return out a list of vectorized versions of audio features
-# @detail searches spotify with the given query, and gets as many results as specified
-#         by the lim parameter. For each track, it gets the audio features, converts it
-#         to a vector, and finally returns a list of all the vectors
-#
-def compareSearch(user, query, lim=20, debug=False):
-	usageToken = util.prompt_for_user_token(user, scope)
-	if usageToken:
-		sp = spotipy.Spotify(auth=usageToken)
-		results = sp.search(query, limit=lim)
-		
-		vectors = []
-		for track in results['tracks']['items']:
-			try:
-				featureVector = Assemble_Profile.getVectorFromTrack(sp, sp.audio_features([track['id']])[0], track['artists'])
-				vectors.append(featureVector)
-			except: pass
-		
-		if debug:
-			print vectors
-		
-		return vectors
 
-
-##@fn
+##@fn compareFeatured
 # @brief Gets songs from featured playlists and returns a list of audio features 
-# @param in user a user to establish a usageToken
-# @param in lim the number of playlists to retrieve
-# @param in debug prints debug info if true		
-# @return out a list of vectorized versions of audio features
-# @detail grabs a number of spotify's featured playlists, as specified by the lim
+# @param user a user to establish a usageToken
+# @param lim the number of playlists to retrieve
+# @param debug prints debug info if true		
+# @return A list of vectorized versions of audio features
+# @details Grabs a number of spotify's featured playlists, as specified by the lim
 #         parameter. For each track within each playlist, it gets the audio features,
 #         converts it to a vector, and finally returns a list of all the vectors
 #
@@ -69,11 +42,11 @@ def compareFeatured(user, lim=20, debug=True):
 		return vectors
 
 
-##@fn
+##@fn compareNewReleases
 # @brief Compares new releases with the user's agrregated preferences
-# @param in lim the number of new releases to compare
-# @return out a list of vectorized versions of audio features
-# @detail grabs a number of spotify's new releases, as specified by the lim
+# @param lim the number of new releases to compare
+# @return A list of vectorized versions of audio features
+# @details grabs a number of spotify's new releases, as specified by the lim
 #         parameter. For each track, it gets the audio features, converts it
 #         to a vector, and finally returns a list of all the vectors
 #
@@ -95,6 +68,36 @@ def compareNewReleases(user, lim=20, debug=False):
 		if debug:
 			print vectors
 			
+		return vectors
+
+
+##@fn compareSearch 
+# @brief Gets songs from a search query and returns a list of audio features 
+# @param user a user to establish a usageToken
+# @param query a string to be used with the spotify search feature
+# @param lim the number of search results to retrieve
+# @param debug prints debug info if true
+# @return A list of vectorized versions of audio features
+# @details searches spotify with the given query, and gets as many results as specified
+#         by the lim parameter. For each track, it gets the audio features, converts it
+#         to a vector, and finally returns a list of all the vectors
+#
+def compareSearch(user, query, lim=20, debug=False):
+	usageToken = util.prompt_for_user_token(user, scope)
+	if usageToken:
+		sp = spotipy.Spotify(auth=usageToken)
+		results = sp.search(query, limit=lim)
+		
+		vectors = []
+		for track in results['tracks']['items']:
+			try:
+				featureVector = Assemble_Profile.getVectorFromTrack(sp, sp.audio_features([track['id']])[0], track['artists'])
+				vectors.append(featureVector)
+			except: pass
+		
+		if debug:
+			print vectors
+		
 		return vectors
 		
 

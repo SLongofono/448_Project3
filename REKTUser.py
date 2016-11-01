@@ -1,7 +1,7 @@
 ##@file REKTUser.py
 # @author Stephen Longofono
 # @brief
-# @detail This file defines the User class which is used to generate and manipulate a user profile from
+# @details This file defines the User class which is used to generate and manipulate a user profile from
 #         their Spotify profile
 
 import Mutators
@@ -13,9 +13,9 @@ import Compare_Songs
 
 ##@class User
 # @brief Manages creation and manipulation of a Spotify user profile
-# @param in debug An optional Boolean parameter specifying whether or not to run in verbose mode
-# @param in logfile An optional filename for a test file containing a user profile vector
-# @detail The User class manages the local representation of a Spotify user, as aggregated from a
+# @param debug An optional Boolean parameter specifying whether or not to run in verbose mode
+# @param logfile An optional filename for a test file containing a user profile vector
+# @details The User class manages the local representation of a Spotify user, as aggregated from a
 #         dataset composed of the songs in their Spotify library.  A profile vector represents the
 #         average values for each of the features we track and recommend with, and is represented
 #         locally in a text file (soon to be database)
@@ -41,9 +41,9 @@ class User():
 
 	##@fn addData
 	# @brief Processes a new song vector into the user profile vector
-	# @param in newDataVector
+	# @param newDataVector
 	# @return void
-	# @detail This method applies the mutator functions associated with each song feature to the features
+	# @details This method applies the mutator functions associated with each song feature to the features
 	#         in newDataVector, incorporating their values in the volatile state within each mutator.  Note
 	#         that changes are not applied to the user profile permenantly until saveStatus() is called.
 	def addData(self, newDataVector):
@@ -52,9 +52,9 @@ class User():
 
 	##@fn getSongDifferences
 	# @brief Returns a list of the featurewise differences of each of a list of new song vectors and the user profile vector
-	# @param in newSongVectors A list of song vectors to compare against
+	# @param newSongVectors A list of song vectors to compare against
 	# @return A list of lists representing the feature difference of each of the song vectors passed in.
-	# @detail This method binds the Variance.getVariance() function to the user profile, and then Curries
+	# @details This method binds the Variance.getVariance() function to the user profile, and then Curries
 	#         with each of the song vectors in newSongvectors.  See Variance.py for more details on how
 	#         list features are handled versus value features.
 	def getSongDifferences(self, newSongVectors):
@@ -72,9 +72,9 @@ class User():
 
 	##@fn processProfile
 	# @brief Reads in a user profile from a local logfile
-	# @param in filename The text document which contains the user profile vector information.
+	# @param filename The text document which contains the user profile vector information.
 	# @return void
-	# @detail This method opens the file passed in and parses each line into the User.profile member.
+	# @details This method opens the file passed in and parses each line into the User.profile member.
 	#         it is assumed that the filename passed in refers to a valid and accesible file in the
 	#         CWD and that the file is properly formatted.  We used  {{a,,b,,c}} to denote lists, and
 	#         each line is parsed as an element of the profile vector.
@@ -94,7 +94,7 @@ class User():
 	##@fn saveStatus
 	# @brief Saves the current user profile vector to disk
 	# @return void
-	# @detail This method aggregates the new values in the mutator functions and writes them to
+	# @details This method aggregates the new values in the mutator functions and writes them to
 	#         the user profile logfile, preserving the state for future access by our program.
 	#         Each element in the profile vector is written to its own line.  Values are written
 	#         directly, and lists are written as {{a,,b,,c}} to represent the list [a,b,c].

@@ -1,7 +1,7 @@
 ##@file Toy_Playlist.py
 # @brief An example of using the Spotipy module to create and access a playlist
 # @author Paul Lamere
-# @detail From the Spotipy documentation
+# @details From the Spotipy documentation
 #         Accessed October 2016
 #         https://github.com/plamere/spotipy/blob/master/examples/user_playlists.py
 #         Modified by Stephen Longofono
@@ -10,7 +10,6 @@
 import sys
 import os
 import subprocess
-
 import spotipy
 import spotipy.util as util
 
