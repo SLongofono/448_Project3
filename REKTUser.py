@@ -127,6 +127,9 @@ class User():
 if __name__ == '__main__':
 	import os
 	import sys
+	if len(sys.argv) < 2:
+		print "Usage: python REKTUser.py <username>"
+		sys.exit()
 	user = sys.argv[1]
 
 	print "\n\nTest run..."

@@ -5,25 +5,6 @@
 import math
 
 
-# @var compareVec
-#  @brief A list of functions to compute variance of two vectors
-#  @details compareVec holds references to functions to be applied when evaluating the
-#	feature-by-feature difference between two feature vectors.
-#
-compareVec = 	[
-		listVariance,
-		listVariance,
-		valueVariance,
-		valueVariance,
-		valueVariance,
-		valueVariance,
-		valueVariance,
-		valueVariance,
-		valueVariance,
-		valueVariance
-		]
-
-
 # # getVariance
 #  @brief Apply the functions in compareVec to the values in base, new
 #  @param base The user profile vector
@@ -68,6 +49,24 @@ def listVariance(base, new):
 #	from the user profile vector feature described by base.
 def valueVariance(base, new):
     return math.fabs(base-new)
+
+# @var compareVec
+#  @brief A list of functions to compute variance of two vectors
+#  @details compareVec holds references to functions to be applied when evaluating the
+#	feature-by-feature difference between two feature vectors.
+#
+compareVec = 	[
+		listVariance,
+		listVariance,
+		valueVariance,
+		valueVariance,
+		valueVariance,
+		valueVariance,
+		valueVariance,
+		valueVariance,
+		valueVariance,
+		valueVariance
+		]
 
 
 # Debugging and ad-hoc testing
