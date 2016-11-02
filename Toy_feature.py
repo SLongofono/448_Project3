@@ -1,3 +1,10 @@
+## @file Toy_feature.py
+# @brief An example of using the Spotipy module to authenticate
+# @author Paul Lamere
+# @details From the Spotipy documentation
+#             Accessed October 2016
+#             https://github.com/plamere/spotipy/blob/master/examples/audio_features.py
+
 import sys
 import spotipy
 import spotipy.util as util
