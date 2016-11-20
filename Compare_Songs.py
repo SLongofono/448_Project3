@@ -7,6 +7,17 @@ import sys
 import spotipy
 import spotipy.util as util
 import Assemble_Profile
+import ConfigParser
+
+# Extract necessary info from configuration file
+config = ConfigParser.RawConfigParser()
+config.read('.rektconfig.txt')
+user = {}
+user['username'] = config.get('user', 'username')
+user['client_secret'] = config.get('user', 'client_secret')
+user['client_id'] = config.get('user', 'client_id')
+user['redirect_uri'] = config.get('user', 'redirect_uri')
+print user
 
 ## @var scope
 # @brief describes the permissions associated with the authorization token
@@ -56,7 +67,11 @@ def compareFeatured(user, lim=20, debug=True):
 #         to a vector, and finally returns a list of all the vectors
 #
 def compareNewReleases(user, lim=20, debug=False):
-	usageToken = util.prompt_for_user_token(user, scope)
+	usageToken = util.prompt_for_user_token(username=user['username'], 
+						client_id=user['client_id'],
+						client_secret=user['client_secret'],
+						redirect_uri=user['redirect_uri'],
+						scope=scope)
 	if usageToken:
 		sp = spotipy.Spotify(auth=usageToken)
 		results = sp.new_releases(limit=lim)
@@ -88,7 +103,11 @@ def compareNewReleases(user, lim=20, debug=False):
 #         to a vector, and finally returns a list of all the vectors
 #
 def compareSearch(user, query, lim=20, debug=False):
-	usageToken = util.prompt_for_user_token(user, scope)
+	usageToken = util.prompt_for_user_token(username=user['username'],
+						client_id=user['client_id'],
+						client_secret=user['client_secret'],
+						redirect_uri=user['redirect_uri'],
+						scope=scope)
 	if usageToken:
 		sp = spotipy.Spotify(auth=usageToken)
 		results = sp.search(query, limit=lim)
@@ -108,8 +127,6 @@ def compareSearch(user, query, lim=20, debug=False):
 
 # a menu system to test the various comparison methods
 if __name__ == '__main__':
-	if len(sys.argv) > 1:
-		user = sys.argv[1]
 		command = raw_input("Enter the number associated with the desired command:\n   1. Compare with New Releases\n   2. Compare with Featured Playlists\n   3. Compare with Search\n")
 		if command == "1":
 			lim = int(raw_input("How many new releases would you like to compare (Max 50)? "))
@@ -135,9 +152,4 @@ if __name__ == '__main__':
 		
 		else:
 			print "Invalid command"
-		
-	else:
-		print "Usage: %s username" % (sys.argv[0],)
-		sys.exit()
-
 

@@ -6,6 +6,16 @@ localDB = "user.db"
 db_exists = os.path.exists(localDB)
 
 def initializeDB(conn, inFile):
+
+	"""Schema
+		numerics   - rows represent individual songs, columns are numeric features associated with the songs
+		artists    - rows represent unique artist strings
+		genres	   - rows represent unique genre strings
+		profile    - rows represent the average value of each column in numerics
+		deviations - rows represent the standard deviation of each column in numerics
+		weight     - single row, columns represent the weight of each of the 10 features, composed of
+			     artists, genres, popularity, acousticness, danceability, energy, instrumentalness, key, liveness, and valence"""
+
 	# FOR LATER
 	# connect to spotify
 	# pull songs per demo method
@@ -29,14 +39,31 @@ def initializeDB(conn, inFile):
 						);""")
 
 	# Create table for artists
-	conn.execute("""
-		CREATE TABLE artists (ID INTEGER PRIMARY KEY, name TEXT NOT NULL UNIQUE);
-	""")
+	conn.execute("""CREATE TABLE artists (ID INTEGER PRIMARY KEY, name TEXT NOT NULL UNIQUE);""")
 
 	# Create table for genres
-	conn.execute("""
-		CREATE TABLE genres (ID INTEGER PRIMARY KEY, name TEXT NOT NULL UNIQUE);
-	""")
+	conn.execute("""CREATE TABLE genres (ID INTEGER PRIMARY KEY, name TEXT NOT NULL UNIQUE);""")
+
+	# Create table for user profile
+	conn.execute("""CREATE TABLE profile(popularityVal DECIMAL NOT NULL,
+					     acousticness DECIMAL NOT NULL,
+					     danceability DECIMAL NOT NULL,
+					     energy DECIMAL NOT NULL,
+					     instrumentalness DECIMAL NOT NULL,
+					     key INT NOT NULL,
+					     liveness DECIMAL NOT NULL,
+					     valence DECIMAL NOT NULL);""")
+
+	# Create table for user profile std deviations
+	conn.execute("""CREATE TABLE deviations(username TEXT NOT NULL,
+					  	popularityVal DECIMAL NOT NULL,
+						acousticness DECIMAL NOT NULL,
+						danceability DECIMAL NOT NULL,
+						energy DECIMAL NOT NULL,
+						instrumentalness DECIMAL NOT NULL,
+						key INT NOT NULL,
+						liveness DECIMAL NOT NULL,
+						valence DECIMAL NOT NULL);""")
 
 	for line in input:
 		temp = line.split('###')[:-1]
@@ -81,30 +108,31 @@ def insertMultiple(table, keys, vals):
 def insertSingle(table, key, val):
 	return "INSERT INTO " + table + " (" + key + ") VALUES ('" + val + "');"
 
+def testSchema(conn, table, columnLength, columnType):
+	cursor = conn.execute("SELECT * FROM " + table + ";")
+	print("Column length expected: %d\nActual length: %d\n\n") % (columnLength, len(cursor))
+	print cursor[0]
+	print type(cursor[0])
+
 with sqlite3.connect(localDB) as conn:
 	if not db_exists:
 		print "No valid user database found, creating new database..."
 		initializeDB(conn, 'SongVectors.txt')
 
 	print "Song vectors :"
-	cursor = conn.execute("""
-		SELECT * FROM numerics
-	""")
+	cursor = conn.execute("SELECT * FROM numerics")
 	for i in cursor:
 		print i
 
 	print "Song Genres: "
-	cursor = conn.execute("""
-		SELECT * FROM artists
-	""")
+	cursor = conn.execute("SELECT * FROM artists")
 	for i in cursor:
 		print i
 
 
 	print "Song Artists: "
-	cursor = conn.execute("""
-		SELECT * FROM genres
-	""")
+	cursor = conn.execute("SELECT * FROM genres")
 	for i in cursor:
 		print i
 
+	testSchema(conn, "numerics", 8, float)
