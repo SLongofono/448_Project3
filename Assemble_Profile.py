@@ -14,6 +14,14 @@ import spotipy.util as util
 import time
 import pprint
 import traceback
+import config_obj
+import os
+import sqlite3
+
+user = config_obj.get_user()
+localDB = config_obj.get_db()
+db_exists = os.path.exists(localDB)
+
 
 ## @var labels
 # @brief A human-friendly list of the features in a user/song profile vector
@@ -22,7 +30,7 @@ scope = 'user-library-read'
 
 
 ##  dumpSongVectors
-# @brief Write a list of song vectors to file for processing
+# @brief Write a list of song vectors to file for processing/debugging
 # @param vectors A list of song vectors in the format produced by getVectorFromTrack()
 # @return void
 # @details Steps through the list of song vectors and writes each to SongVectors.txt on its own
@@ -61,6 +69,7 @@ def dumpSongVectors(vectors):
 def getSongFeatures(sp, ids):
 	return sp.audio_features(ids)
 
+
 ##  getTracksUserAccount
 # @brief Get the user's songs from their library
 # @param sp The handle to the Spotipy wrapper associated with the current user
@@ -72,7 +81,7 @@ def getSongFeatures(sp, ids):
 def getTracksUserAccount(sp, limit=20, index=0):
     return sp.current_user_saved_tracks(limit, index)
 
-	
+
 ##  getUserSongVectors
 # @brief Assembles a list of song vectors for a user
 # @param user The spotify username of the user to fetch songs from
@@ -83,7 +92,11 @@ def getTracksUserAccount(sp, limit=20, index=0):
 #         method will abandon its task after 3 failures
 #
 def getUserSongVectors(user):
-	usageToken = util.prompt_for_user_token(user, scope)
+	usageToken = util.prompt_for_user_token(username=user['username'],
+						client_id=user['client_id'],
+						client_secret=user['client_secret'],
+						redirect_uri=user['redirect_uri'],
+						scope=scope)
 	if usageToken:
 		errorCount = 0
 		arties = None
@@ -157,15 +170,147 @@ def getVectorFromTrack(sp, features, artists):
 	return trackVector
 
 
+## insertMultiple
+# @brief Prep an insert SQL query for matched key-value pairs
+def insertMultiple(table, keys, vals):
+	# Join not smart enough to cast so we need to do it manually
+	keystr = '(' + ','.join(map(str, keys)) + ')'
+	valstr = '(' + ','.join(map(str, vals)) + ')'
+	return "INSERT INTO " + table + " " + keystr + " VALUES " + valstr + ";"
+
+## insertSingle
+# @brief Prep an insert query for a single key-value pair
+def insertSingle(table, key, val):
+	return "INSERT INTO " + table + " (" + str(key) + ") VALUES ('" + val + "');"
+
+
+## initializeDB
+# @brief Set up and populate a database of song vectors from the user's library
+def initializeDB(conn, songVectors):
+
+	"""Schema
+		numerics   - rows represent individual songs, columns are numeric features associated with the songs
+		artists    - rows represent unique artist strings
+		genres	   - rows represent unique genre strings
+		profile    - rows represent the average value of each column in numerics
+		deviations - rows represent the standard deviation of each column in numerics
+		weight     - single row, columns represent the weight of each of the 10 features, composed of
+			     artists, genres, popularity, acousticness, danceability, energy, instrumentalness, key, liveness, and valence"""
+
+	# Create table for numeric values
+	conn.execute("""CREATE TABLE numerics (	ID INTEGER PRIMARY KEY,
+						popularity DECIMAL NOT NULL,
+						acousticness DECIMAL NOT NULL,
+						danceability DECIMAL NOT NULL,
+						energy DECIMAL NOT NULL,
+						instrumentalness DECIMAL NOT NULL,
+						key INT NOT NULL,
+						liveness DECIMAL NOT NULL,
+						valence DECIMAL NOT NULL
+						);""")
+
+	# Create table for artists
+	conn.execute("""CREATE TABLE artists (ID INTEGER PRIMARY KEY, name TEXT NOT NULL UNIQUE);""")
+
+	# Create table for genres
+	conn.execute("""CREATE TABLE genres (ID INTEGER PRIMARY KEY, name TEXT NOT NULL UNIQUE);""")
+
+	# Create table for user profile
+	conn.execute("""CREATE TABLE profile(popularityVal DECIMAL NOT NULL,
+					     acousticness DECIMAL NOT NULL,
+					     danceability DECIMAL NOT NULL,
+					     energy DECIMAL NOT NULL,
+					     instrumentalness DECIMAL NOT NULL,
+					     key INT NOT NULL,
+					     liveness DECIMAL NOT NULL,
+					     valence DECIMAL NOT NULL);""")
+
+	# Create table for user profile std deviations
+	conn.execute("""CREATE TABLE deviations(username TEXT NOT NULL,
+					  	popularityVal DECIMAL NOT NULL,
+						acousticness DECIMAL NOT NULL,
+						danceability DECIMAL NOT NULL,
+						energy DECIMAL NOT NULL,
+						instrumentalness DECIMAL NOT NULL,
+						key INT NOT NULL,
+						liveness DECIMAL NOT NULL,
+						valence DECIMAL NOT NULL);""")
+
+	# Create table for user profile weights
+	conn.execute("""CREATE TABLE weights(	artists DECIMAL NOT NULL,
+						genres DECIMAL NOT NULL,
+						popularityVal DECIMAL NOT NULL,
+						acousticness DECIMAL NOT NULL,
+						danceability DECIMAL NOT NULL,
+						energy DECIMAL NOT NULL,
+						instrumentalness DECIMAL NOT NULL,
+						key INT NOT NULL,
+						liveness DECIMAL NOT NULL,
+						valence DECIMAL NOT NULL);""")
+
+
+	# TODO calculate and populate averages
+	# TODO calculate and populate standard deviations
+
+	for song in songVectors:
+		artists = song[0]
+		genres = song[1]
+		nums = song[2:]
+		artistQueries = [insertSingle('artists', 'name', x) for x in song[0]]
+		genreQueries = [insertSingle('genres', 'name', x) for x in song[1]]
+		valueQuery = insertMultiple('numerics', labels[2:], song[2:])
+		for i in artistQueries:
+			try:
+				conn.execute(i)
+
+			# Catch duplicates and ignore
+			except sqlite3.IntegrityError:
+				pass
+
+		for j in genreQueries:
+			try:
+				conn.execute(j)
+
+			# Catch duplicates and ignore
+			except sqlite3.IntegrityError:
+				pass
+
+		try:
+			conn.execute(valueQuery)
+		except:
+			traceback.print_exc()
+
+## updateSongsDB
+# @brief Adds new songs in the user's library to the database
+# TODO write me
+
+
+
 if __name__ == '__main__':
-    if len(sys.argv) > 1:
-		user = sys.argv[1]
+	with sqlite3.connect(localDB) as conn:
+		if (not db_exists):
+			print "\nNo valid user database found, creating new database...\n"
+			print "\nGathering song vectors...\n"
+			songVectors = getUserSongVectors(user)
+			initializeDB(conn, songVectors)
 
-		print "\n\nGetting songs..."
-		songs = getUserSongVectors(user)
+		print "Song numeric vectors :"
+		cursor = conn.execute("SELECT * FROM numerics")
+		for i in cursor:
+			print i
 
-		print "\n\nDumping songs..."
-		dumpSongVectors(songs)
-    else:
-    	print "Usage: %s username" % (sys.argv[0],)
-    	sys.exit()
+		print "Song Genres: "
+		cursor = conn.execute("SELECT * FROM artists")
+		for i in cursor:
+			print i
+
+
+		print "Song Artists: "
+		cursor = conn.execute("SELECT * FROM genres")
+		for i in cursor:
+			print i
+
+		#print "\n\nGetting songs..."
+		#songs = getUserSongVectors(user)
+		#print "\n\nDumping songs..."
+		#dumpSongVectors(songs)

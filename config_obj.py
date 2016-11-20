@@ -10,3 +10,6 @@ user = {'username':config.get('user', 'username'),
 
 def get_user():
 	return user
+
+def get_db():
+	return config.get('database', 'filename')

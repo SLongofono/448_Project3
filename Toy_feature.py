@@ -8,7 +8,10 @@
 import sys
 import spotipy
 import spotipy.util as util
+import config_obj
 
+user=config_obj.get_user()
+db = config_obj.get_db()
 
 def getArtist(sp, artist, numTracks, startTrack):
 	return sp.search(artist, numTracks, startTrack, 'track')
@@ -23,14 +26,11 @@ def getSongFeatures(sp, ids):
 
 scope = 'user-library-read'
 
-if len(sys.argv) > 1:
-	user = sys.argv[1]
-else:
-	print "Usage: %s username" % (sys.argv[0],)
-	sys.exit()
-
-
-usageToken = util.prompt_for_user_token(user, scope)
+usageToken = util.prompt_for_user_token(username=user['username'],
+					client_id=user['client_id'],
+					client_secret=user['client_secret'],
+					redirect_uri=user['redirect_uri'],
+					scope=scope)
 
 if usageToken:
 	sp = spotipy.Spotify(auth=usageToken)

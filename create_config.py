@@ -20,7 +20,10 @@ def go():
 	output.write('username = ' + username + '\n')
 	output.write('client_id = ' + client_id + '\n')
 	output.write('client_secret = ' + client_secret + '\n')
-	output.write('redirect_uri = ' + redirect_uri + '\n')
+	output.write('redirect_uri = ' + redirect_uri + '\n\n')
+
+	output.write('[database]\n')
+	output.write('filename = ' + username + '.db'\n)
 	output.close()
 
 go()

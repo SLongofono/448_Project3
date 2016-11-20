@@ -1,8 +1,10 @@
 import sqlite3
 import os
 import traceback
+import config_obj
 
-localDB = "user.db"
+
+localDB = config_obj.get_db()
 db_exists = os.path.exists(localDB)
 
 def initializeDB(conn, inFile):
