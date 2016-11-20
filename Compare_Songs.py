@@ -7,17 +7,10 @@ import sys
 import spotipy
 import spotipy.util as util
 import Assemble_Profile
-import ConfigParser
+import config_obj
 
-# Extract necessary info from configuration file
-config = ConfigParser.RawConfigParser()
-config.read('.rektconfig.txt')
-user = {}
-user['username'] = config.get('user', 'username')
-user['client_secret'] = config.get('user', 'client_secret')
-user['client_id'] = config.get('user', 'client_id')
-user['redirect_uri'] = config.get('user', 'redirect_uri')
-print user
+# Get user credentials object
+user = config_obj.get_user()
 
 ## @var scope
 # @brief describes the permissions associated with the authorization token
@@ -35,7 +28,11 @@ scope = 'user-library-read'
 #         converts it to a vector, and finally returns a list of all the vectors
 #
 def compareFeatured(user, lim=20, debug=True):
-	usageToken = util.prompt_for_user_token(user, scope)
+	usageToken = util.prompt_for_user_token(username=user['username'],
+						client_id=user['client_id'],
+						client_secret=user['client_secret'],
+						redirect_uri=user['redirect_uri'],
+						scope=scope)
 	if usageToken:
 		sp = spotipy.Spotify(auth=usageToken)
 		results = sp.featured_playlists(limit=lim)
@@ -67,7 +64,7 @@ def compareFeatured(user, lim=20, debug=True):
 #         to a vector, and finally returns a list of all the vectors
 #
 def compareNewReleases(user, lim=20, debug=False):
-	usageToken = util.prompt_for_user_token(username=user['username'], 
+	usageToken = util.prompt_for_user_token(username=user['username'],
 						client_id=user['client_id'],
 						client_secret=user['client_secret'],
 						redirect_uri=user['redirect_uri'],
@@ -91,8 +88,8 @@ def compareNewReleases(user, lim=20, debug=False):
 		return vectors
 
 
-##  compareSearch 
-# @brief Gets songs from a search query and returns a list of audio features 
+##  compareSearch
+# @brief Gets songs from a search query and returns a list of audio features
 # @param user a user to establish a usageToken
 # @param query a string to be used with the spotify search feature
 # @param lim the number of search results to retrieve

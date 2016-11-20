@@ -11,8 +11,6 @@ import spotipy.util as util
 import config_obj
 
 user = config_obj.get_user()
-for key, val in user.iteritems():
-	print type(val)
 
 scope = 'user-library-read'
 
