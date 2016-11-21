@@ -299,13 +299,13 @@ if __name__ == '__main__':
 		for i in cursor:
 			print i
 
-		print "Song Genres: "
+		print "Song Artists: "
 		cursor = conn.execute("SELECT * FROM artists")
 		for i in cursor:
 			print i
 
 
-		print "Song Artists: "
+		print "Song Genres: "
 		cursor = conn.execute("SELECT * FROM genres")
 		for i in cursor:
 			print i
