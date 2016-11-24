@@ -30,15 +30,21 @@ if [ $? -ne 0 ] ; then echo "Failed to verify virtualenv, check that it is insta
 # Create a virtual environment for python in a folder named 'spotifyVenv'
 echo " [ creating virtual environment... ] "
 
-virtualenv spotifyVenv
+virtualenv spottie
 
 if [ $? -ne 0 ] ; then echo "Failed to create virtual environment, check that it and python are installed and in your system path"; exit; fi
 
 # Download and install the extensions we need with the pip python installer
 echo " [ setting up Spotipy... ] "
-spotifyVenv/bin/pip install Spotipy
+spottie/bin/pip install Spotipy
 
 if [ $? -ne 0 ] ; then echo "Failed to download and install Spotipy"; exit; fi
+
+# Modify source code until the Spotipy developers get their act together...
+echo " [ updating Spotipy for multi-OS support ] "
+python SpotipyMod.py
+
+if [ $? -ne 0 ] ; then echo "Failed to update Spotipy, you may have a bad time with the rest of the installation"; exit; fi
 
 echo
 echo " [ Success ] "
