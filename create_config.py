@@ -23,7 +23,7 @@ def go():
 	output.write('redirect_uri = ' + redirect_uri + '\n\n')
 
 	output.write('[database]\n')
-	output.write('filename = ' + username + '.db'\n)
+	output.write('filename = ' + username + '.db' + '\n')
 	output.close()
 
 go()
