@@ -216,7 +216,7 @@ def initializeDB(conn, songVectors):
 	conn.execute("""CREATE TABLE genres (ID INTEGER PRIMARY KEY, name TEXT NOT NULL UNIQUE);""")
 
 	# Create table for user profile
-	conn.execute("""CREATE TABLE profile(popularityVal DECIMAL NOT NULL,
+	conn.execute("""CREATE TABLE profile(popularity DECIMAL NOT NULL,
 					     acousticness DECIMAL NOT NULL,
 					     danceability DECIMAL NOT NULL,
 					     energy DECIMAL NOT NULL,
@@ -227,7 +227,7 @@ def initializeDB(conn, songVectors):
 
 	# Create table for user profile std deviations
 	conn.execute("""CREATE TABLE deviations(username TEXT NOT NULL,
-					  	popularityVal DECIMAL NOT NULL,
+					  	popularity DECIMAL NOT NULL,
 						acousticness DECIMAL NOT NULL,
 						danceability DECIMAL NOT NULL,
 						energy DECIMAL NOT NULL,
@@ -239,7 +239,7 @@ def initializeDB(conn, songVectors):
 	# Create table for user profile weights
 	conn.execute("""CREATE TABLE weights(	artists DECIMAL NOT NULL,
 						genres DECIMAL NOT NULL,
-						popularityVal DECIMAL NOT NULL,
+						popularity DECIMAL NOT NULL,
 						acousticness DECIMAL NOT NULL,
 						danceability DECIMAL NOT NULL,
 						energy DECIMAL NOT NULL,
