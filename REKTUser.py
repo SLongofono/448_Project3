@@ -1,5 +1,5 @@
 ## @file REKTUser.py
-# REKTUser 
+# REKTUser
 # @author Stephen Longofono
 # @brief The user class for the recommendation system
 # @details This file defines the User class which is used to generate and manipulate a user profile from
@@ -10,6 +10,11 @@ import traceback
 import Variance
 import functools
 import Compare_Songs
+import sqlite3
+import config_obj
+
+user = config_obj.get_user()
+localDB = config_obj.get_db()
 
 
 ## @class User
@@ -22,11 +27,13 @@ import Compare_Songs
 #         locally in a text file (soon to be database)
 class User():
 	def __init__(self, logfile="userProfile.txt", debug=False):
+		self.db = sqlite3.connect(localDB)
+		# Set up the interface to always return strings if possible, since in general utf(x) != str(x)
+		self.db.text_factory = str
 		self.logfile = logfile
 		self.debug = debug
 		self.profile = None
 		self.labels = ['artists', 'genres', 'popularity', 'acousticness', 'danceability', 'energy', 'instrumentalness', 'key', 'liveness', 'valence']
-		self.processProfile(self.logfile)
 		self.addVector =[
                             Mutators.artistMutator,
                             Mutators.genreMutator,
@@ -39,8 +46,9 @@ class User():
                             Mutators.livenessMutator,
                             Mutators.valenceMutator
 			]
+		self.processProfile()
 
-	##  addData
+	## addData
 	# @brief Processes a new song vector into the user profile vector
 	# @param newDataVector
 	# @return void
@@ -51,7 +59,8 @@ class User():
 		for i in range (len(self.addVector)):
 			self.addVector[i](newVal=newDataVector[i], debug=self.debug)
 
-	##  getSongDifferences
+
+	## getSongDifferences
 	# @brief Returns a list of the featurewise differences of each of a list of new song vectors and the user profile vector
 	# @param newSongVectors A list of song vectors to compare against
 	# @return A list of lists representing the feature difference of each of the song vectors passed in.
@@ -61,52 +70,99 @@ class User():
 	def getSongDifferences(self, newSongVectors):
 		return  map(functools.partial(Variance.getVariance, self.profile),  newSongVectors)
 
-	##  prettyPrintProfile
+
+	## prettyPrintProfile
 	# @brief Prints a user profile in a human-friendly way
 	# @return void
 	# @brief Prints a user profile in a human-friendly way (Label: value)
 	def prettyPrintProfile(self):
-		for i in range(10):
-			print self.labels[i], ':'
-			print self.profile[i]
+		if len(self.profile) > 2:
+			for i in range(10):
+				print self.labels[i], ':'
+				print self.profile[i]
+		else:
+			print "Profile has not been set up in database yet, did you forget to run calculateAverages()?"
 
 
-	##  processProfile
-	# @brief Reads in a user profile from a local logfile
-	# @param filename The text document which contains the user profile vector information.
+	## processProfile
+	# @brief Reads in a user profile from a local database
 	# @return void
-	# @details This method opens the file passed in and parses each line into the User.profile member.
-	#         it is assumed that the filename passed in refers to a valid and accesible file in the
-	#         CWD and that the file is properly formatted.  We used  {{a,,b,,c}} to denote lists, and
-	#         each line is parsed as an element of the profile vector.
-	def processProfile(self, filename):
+	# @details This method opens the database associate with the user and parses out the user profile
+	#	  into the User.profile member.  It is assumed that the database passed in refers to a valid
+	#	  and accesible file in the working directory and that it has been initialized with the
+	#         schema detailed in Assemble_Profile.py.
+	def processProfile(self):
 		print 'Processing user profile data...'
 		self.profile = []
-		x = open(filename, 'r')
-		artists = x.readline()[2:-3].split(',,')
-		genres = x.readline()[2:-3].split(',,')
-		self.profile.append(artists)
-		self.profile.append(genres)
-		for line in x:
-			self.profile.append(float(line))
-		x.close()
+		self.profile.append(map(lambda x: x[0], self.db.execute("SELECT name FROM artists")))
+		self.profile.append(map(lambda x: x[0], self.db.execute("SELECT name FROM genres")))
+		self.calculateAverages()
+
+	## calculateAverages
+	# @brief update the user profile with the current average of numeric values in the user database
+	# @return void
+	# @details This method is used to evaluate the mean of each column in the "numerics" table for the
+	#	user.  It is assumed that the database has been initialized, and that the "numerics" table
+	# 	already exists.
+	def calculateAverages(self):
+		print 'Assembling averages...'
+		payload = [self.db.execute("SELECT " + x + " FROM NUMERICS;") for x in self.labels[2:]]
+
+		averages = []
+		for column in payload:
+			data = [x[0] for x in column]
+			averages.append(sum(data)/len(data))
+		print averages
+		self.profile = self.profile[:2] + averages
+		self.prettyPrintProfile()
 
 
-	##  saveStatus
-	# @brief Saves the current user profile vector to disk
+	## saveStatus
+	# @brief Saves the current user profile vector and any new songs to the user database
 	# @return void
 	# @details This method aggregates the new values in the mutator functions and writes them to
 	#         the user profile logfile, preserving the state for future access by our program.
-	#         Each element in the profile vector is written to its own line.  Values are written
-	#         directly, and lists are written as {{a,,b,,c}} to represent the list [a,b,c].
+	#         Songs are then added to the user database, and the standard deviations are updated
 	def saveStatus(self):
-		# Add unique entries to existing artist and genre lists
-		self.profile[0] += Mutators.getUniques(self.profile[0], self.addVector[0]())
-		self.profile[1] += Mutators.getUniques(self.profile[1], self.addVector[1]())
-
-		# Average in numerical values
+		# Average new values into profile
 		for i in range(2, len(self.profile)):
-			self.profile[i] = (self.profile[i] + self.addVector[i]())/2
+			newVals = self.addVector[i]()
+			self.profile[i] = (self.profile[i] + sum(newVals))/(1 + len(newVals))
+
+		# Identify unique artists and genres to add to database
+		newArtists = Mutators.getUniques(self.profile[0], self.addVector[0]())
+		newGenres = Mutators.getUniques(self.profile[1], self.addVector[1]())
+
+		# Attempt to add in new artists and genres
+		for each in newArtists:
+			try:
+				self.db.execute("INSERT INTO artists(name) values(?);", each)
+			except:
+				pass
+
+		for each in newGenres:
+			try:
+				self.db.execute("INSERT INTO genress(name) values(?);", each)
+			except:
+				pass
+
+
+		# Add in new numerical values to db
+		newSongs = zipAll([x() for x in self.addVector[2:]])
+		print "Saving new songs..."
+		for song in newSongs:
+			try:
+				# Note that this is special sqlite3 syntax, and would not otherwise work in Python
+				self.db.execute("INSERT INTO numerics(popularity, acousticness,danceability,energy,instrumentalness,key,liveness,valence) VALUES(?,?,?,?,?,?,?,?)", song)
+			except:
+				pass
+
+		# TODO Add in new standard deviations to db
+
+		print "Saving user profile..."
+		for i in range(len(self.profile[2:])):
+			self.db.execute("UPDATE profile SET " + self.labels[i+2] + "=" + str(self.profile[i+2]) + ";")
+
 		try:
 			x = open(self.logfile, 'w')
 			x.write('{{' + ',,'.join(self.profile[0]) + '}}')
@@ -122,21 +178,33 @@ class User():
 			print 'Failed to save new profile...'
 			traceback.print_exc()
 
+## zipAll
+# @brief Helper function which implements zip for an arbitrary number of lists
+# @param columns a list of lists representing columns in a table
+# @return a list of tuples, each tuple representing the ith row in the column set
+# @details This implements zip on an arbitrary number of columns.  The built in zip
+#	will accept any number of explicitly defined lists to zip over, but it does
+#	not include a way to pass in a list of those lists.
+def zipAll(columns):
+	results = []
+	i = 0
+	while i < len(columns[0]):
+		row = [x[i] for x in columns]
+		results.append(tuple(row))
+		i += 1
+	return results
 
 # Demonstration and ad-hoc testing below
 if __name__ == '__main__':
 	import os
-	import sys
-	if len(sys.argv) < 2:
-		print "Usage: python REKTUser.py <username>"
-		sys.exit()
-	user = sys.argv[1]
 
 	print "\n\nTest run..."
 
 	# Basic setup
 	print "\n\nCreating user..."
 	tester = User(debug=True)
+
+	tester.calculateAverages()
 
 	print "\n\nUser profile vector: "
 	tester.prettyPrintProfile()
@@ -212,7 +280,7 @@ if __name__ == '__main__':
 	print bestSong, " with a total difference ", bestVal
 
 
-	print "\n\nEntering interactive demo..."
+#	print "\n\nEntering interactive demo..."
 
-	command = "python Compare_Songs.py " + user
-	os.system(command)
+#	command = "python Compare_Songs.py "
+#	os.system(command)'''

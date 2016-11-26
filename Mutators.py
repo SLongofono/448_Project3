@@ -61,7 +61,7 @@ def popularityMutator(vals=[], newVal=None, debug=False):
             print 'New values: ', vals
         else:
             vals.append(newVal)
-    return sum(vals)/len(vals) if len(vals) > 0 else 0
+    return vals
 
 def acousticnessMutator(vals=[], newVal=None, debug=False):
     if newVal:
@@ -71,7 +71,7 @@ def acousticnessMutator(vals=[], newVal=None, debug=False):
             print 'New values: ', vals
         else:
             vals.append(newVal)
-    return sum(vals)/len(vals) if len(vals) > 0 else 0
+    return vals
 
 def danceabilityMutator(vals=[], newVal=None, debug=False):
     if newVal:
@@ -81,7 +81,7 @@ def danceabilityMutator(vals=[], newVal=None, debug=False):
             print 'New values: ', vals
         else:
             vals.append(newVal)
-    return sum(vals)/len(vals) if len(vals) > 0 else 0
+    return vals
 
 def energyMutator(vals=[], newVal=None, debug=False):
     if newVal:
@@ -91,7 +91,7 @@ def energyMutator(vals=[], newVal=None, debug=False):
             print 'New values: ', vals
         else:
             vals.append(newVal)
-    return sum(vals)/len(vals) if len(vals) > 0 else 0
+    return vals
 
 def instrumentalnessMutator(vals=[], newVal=None, debug=False):
     if newVal:
@@ -101,7 +101,7 @@ def instrumentalnessMutator(vals=[], newVal=None, debug=False):
             print 'New values: ', vals
         else:
             vals.append(newVal)
-    return sum(vals)/len(vals) if len(vals) > 0 else 0
+    return vals
 
 def keyMutator(vals=[], newVal=None, debug=False):
     if newVal:
@@ -111,7 +111,7 @@ def keyMutator(vals=[], newVal=None, debug=False):
             print 'New values: ', vals
         else:
             vals.append(newVal)
-    return sum(vals)/len(vals) if len(vals) > 0 else 0
+    return vals
 
 def livenessMutator(vals=[], newVal=None, debug=False):
     if newVal:
@@ -121,7 +121,7 @@ def livenessMutator(vals=[], newVal=None, debug=False):
             print 'New values: ', vals
         else:
             vals.append(newVal)
-    return sum(vals)/len(vals) if len(vals) > 0 else 0
+    return vals
 
 def valenceMutator(vals=[], newVal=None, debug=False):
     if newVal:
@@ -131,4 +131,4 @@ def valenceMutator(vals=[], newVal=None, debug=False):
             print 'New values: ', vals
         else:
             vals.append(newVal)
-    return sum(vals)/len(vals) if len(vals) > 0 else 0
+    return vals
