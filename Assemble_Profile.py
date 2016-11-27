@@ -249,9 +249,6 @@ def initializeDB(conn, songVectors):
 						valence DECIMAL NOT NULL);""")
 
 
-	# TODO calculate and populate averages
-	# TODO calculate and populate standard deviations
-
 	for song in songVectors:
 		artists = song[0]
 		genres = song[1]
@@ -280,11 +277,6 @@ def initializeDB(conn, songVectors):
 		except:
 			traceback.print_exc()
 
-## updateSongsDB
-# @brief Adds new songs in the user's library to the database
-# TODO write me
-
-
 
 if __name__ == '__main__':
 	with sqlite3.connect(localDB) as conn:
@@ -309,8 +301,3 @@ if __name__ == '__main__':
 		cursor = conn.execute("SELECT * FROM genres")
 		for i in cursor:
 			print i
-
-		#print "\n\nGetting songs..."
-		#songs = getUserSongVectors(user)
-		#print "\n\nDumping songs..."
-		#dumpSongVectors(songs)
