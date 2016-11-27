@@ -277,6 +277,9 @@ def initializeDB(conn, songVectors):
 		except:
 			traceback.print_exc()
 
+		# Make it so
+		conn.commit()
+
 
 if __name__ == '__main__':
 	with sqlite3.connect(localDB) as conn:
