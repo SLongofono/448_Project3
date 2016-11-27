@@ -99,8 +99,10 @@ class User():
 		self.profile.append(map(lambda x: x[0], self.db.execute("SELECT name FROM artists")))
 		self.profile.append(map(lambda x: x[0], self.db.execute("SELECT name FROM genres")))
 		self.calculateAverages()
+		self.calculateStandardDeviation()
 		print "Saving user profile..."
 		self.db.execute("INSERT INTO profile(popularity,acousticness,danceability,energy,instrumentalness,key,liveness,valence) VALUES(?,?,?,?,?,?,?,?);", tuple(self.profile[2:]))
+		self.db.execute("INSERT INTO deviatons(popularity, acoutsticness,danceability,energy,instrumentalness,key,liveness,valence) VALUES(?,?,?,?,?,?,?,?);", tuple(self.stdDev))
 		self.db.commit()
 
 	## calculateAverages
