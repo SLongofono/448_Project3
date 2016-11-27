@@ -226,8 +226,7 @@ def initializeDB(conn, songVectors):
 					     valence DECIMAL NOT NULL);""")
 
 	# Create table for user profile std deviations
-	conn.execute("""CREATE TABLE deviations(username TEXT NOT NULL,
-					  	popularity DECIMAL NOT NULL,
+	conn.execute("""CREATE TABLE deviations(popularity DECIMAL NOT NULL,
 						acousticness DECIMAL NOT NULL,
 						danceability DECIMAL NOT NULL,
 						energy DECIMAL NOT NULL,
