@@ -33,6 +33,7 @@ class User():
 		self.logfile = logfile
 		self.debug = debug
 		self.profile = None
+		self.stdDev = None
 		self.labels = ['artists', 'genres', 'popularity', 'acousticness', 'danceability', 'energy', 'instrumentalness', 'key', 'liveness', 'valence']
 		self.addVector =[
                             Mutators.artistMutator,
@@ -120,7 +121,14 @@ class User():
 		self.profile = self.profile[:2] + averages
 		self.prettyPrintProfile()
 
-	
+	def caluculateStandardDeviation(self):
+		print 'Assembling Standard Deviations ...'
+		payload = [self.db.execute("SELECT " + x + " FROM NUMERICS;") for x in self.labels[2:]]
+		stdDev = []
+		for column in payload:
+			mean=sum(column)/len(column)
+		selfstdDev.append((sum( (x-mean)**2.0 for x in row ) / float(len(row)) )**0.5))
+
 
 	## saveStatus
 	# @brief Saves the current user profile vector and any new songs to the user database
