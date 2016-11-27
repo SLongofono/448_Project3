@@ -20,6 +20,59 @@ def getVariance(base, new):
 
 	return results
 
+
+## getNewWeight
+# @brief Create a relative weight vector using standard deviations of features
+# @param stddevs A list of the standard deviations for each numerical feature
+# @return A relative weight vector of length 10
+# @details This method uses a list of standard deviations to determine which of
+#	the features is the most specific, i.e. which has the smalles standard
+#	deviation.  This is used in a scaling factor to determine the relative
+#	weight of each feature, as calculated by the minimum standard deviation
+#	divided by the ith standard deviation.  Assumes that the first two
+#	entries in the resultant weighting vector are binary (always weighted
+#	at unity)
+def getNewWeight(stddevs):
+	newWeight = [1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0]
+
+	# Find minimum spread about mean
+	minSigma = 100
+	for i in stddevs:
+		if i < minSigma:
+			minSigma = i
+
+	# normalize to this spread in a scaling vector
+	# Skip first two, artist and genre have binary weight
+	for i in range(len(stddevs)):
+		newWeight[i+2] *= (minSigma/stddevs[i])
+
+	return newWeight
+
+## filter2Sigma
+# @brief generates a binary filtering list with which to filter a list of songs
+# @param songVectors
+# @param songVectors
+# @param songVectors
+# @return A list of integers representing songs that meet the criterion (1) or do not (0)
+# @details This method applies an initial filtering of songs which fall outside of two
+#	standard deviations from the mean value of any feature.  This will be used as a
+#	part of the recommendation process to weed out songs that are drastically different
+#	from anything the user has liked in the past.  The resultant vector will be an ordered
+#	filter to apply upstream, to a list of song objects which includes the spotify track ID.
+def filter2Sigma(songVectors, averages, stddevs):
+	results = []
+	for song in songVectors:
+		rejected = False
+		for i in range(len(song)):
+			if math.fabs(song[i]-averages[i]) > (2*stddevs[i]):
+				rejected = True
+				break
+		if not rejected:
+			results.append(1)
+		else:
+			results.append(0)
+	return results
+
 ## getWeightDifference
 #  @brief Computes the vector difference and applies weighting to song vectors
 #  @param base The user profile vector
@@ -106,3 +159,22 @@ if __name__ == '__main__':
 #	print weight(getVariance(test1, test2), weighting)
 	print getWeightedDifference(test1, test2, weighting)
 	#The expected weighted difference of the above should be: [0,0,2,4,6,8,10,12,14]
+
+	stddevs = [1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0]
+	print getNewWeight(stddevs)
+	# should produce [1, 1, 1, 0.5, 0.33, 0.25, 0.2, 0.166, 0.143, 0.125]
+
+	averages = [10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0]
+	stddevs = [2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0]
+	testSongs = [
+		[10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0],
+		[6.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0],
+		[10.0,10.0,10.0,10.0,10.0,10.0,10.0,14.0],
+		[5.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0],
+		[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],
+		[15.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0],
+		[10.0,10.0,10.0,10.0,10.0,10.0,10.0,15.0],
+		]
+
+	print filter2Sigma(testSongs, averages, stddevs)
+	#Expecting [1,1,1,0,0,0,0]

@@ -85,10 +85,11 @@ class User():
 
 
 	## processProfile
-	# @brief Reads in a user profile from a local database
+	# @brief Reads in a user profile from a local database, updates profile database
 	# @return void
 	# @details This method opens the database associate with the user and parses out the user profile
-	#	  into the User.profile member.  It is assumed that the database passed in refers to a valid
+	#	  into the User.profile member.  After recalculating the average, the user profile is saved
+	#	  in the profile table.  It is assumed that the database passed in refers to a valid
 	#	  and accesible file in the working directory and that it has been initialized with the
 	#         schema detailed in Assemble_Profile.py.
 	def processProfile(self):
@@ -97,6 +98,9 @@ class User():
 		self.profile.append(map(lambda x: x[0], self.db.execute("SELECT name FROM artists")))
 		self.profile.append(map(lambda x: x[0], self.db.execute("SELECT name FROM genres")))
 		self.calculateAverages()
+		print "Saving user profile..."
+		self.db.execute("INSERT INTO profile(popularity,acousticness,danceability,energy,instrumentalness,key,liveness,valence) VALUES(?,?,?,?,?,?,?,?);", tuple(self.profile[2:]))
+		self.db.commit()
 
 	## calculateAverages
 	# @brief update the user profile with the current average of numeric values in the user database
@@ -164,20 +168,7 @@ class User():
 		for i in range(len(self.profile[2:])):
 			self.db.execute("UPDATE profile SET " + self.labels[i+2] + "=" + str(self.profile[i+2]) + ";")
 
-		try:
-			x = open(self.logfile, 'w')
-			x.write('{{' + ',,'.join(self.profile[0]) + '}}')
-			x.write('\n')
-			x.write('{{' + ',,'.join(self.profile[1]) + '}}')
-			x.write('\n')
-			for i in range(2, len(self.profile)):
-				x.write(str(self.profile[i]))
-				x.write('\n')
-			x.close()
-
-		except:
-			print 'Failed to save new profile...'
-			traceback.print_exc()
+		self.db.commit()
 
 ## zipAll
 # @brief Helper function which implements zip for an arbitrary number of lists
@@ -279,9 +270,3 @@ if __name__ == '__main__':
 
 	print "\n\nMost similar new song is: "
 	print bestSong, " with a total difference ", bestVal
-
-
-#	print "\n\nEntering interactive demo..."
-
-#	command = "python Compare_Songs.py "
-#	os.system(command)'''
