@@ -59,7 +59,7 @@ def getVariance(base, new):
 #	of any two songs vectors.  getVariance is called on the two song vectors
 #	to yield a list of 10 numbers representing the difference, and then the
 #	weighting vector is applied to scale each difference element.
-def getWeightedDifference(base, new, weighting):
+def getWeightedDifference(new, base, weighting):
 	return weight(getVariance(base, new), weighting)
 
 
@@ -78,8 +78,8 @@ def filter2Sigma(songVectors, averages, stddevs):
 	results = []
 	for song in songVectors:
 		rejected = False
-		for i in range(len(song)):
-			if math.fabs(song[i]-averages[i]) > (2*stddevs[i]):
+		for i in range(len(stddevs)):
+			if math.fabs(song[i+2]-averages[i+2]) > (2*stddevs[i]):
 				rejected = True
 				break
 		if not rejected:
@@ -116,8 +116,10 @@ def listVariance(base, new):
 #  @details This method compares two values to compute the positive difference (delta)
 #	from the user profile vector feature described by base.
 def valueVariance(base, new):
-    return math.fabs(base-new)
-
+	if new != None:
+		return math.fabs(base-new)
+	else:
+		return 0
 
 ## weight
 # @brief Apply weighting to a song vector
@@ -161,7 +163,7 @@ if __name__ == '__main__':
 	#The expected difference of the above should be: [0,0,1,2,3,4,5,6,7]
 
 #	print weight(getVariance(test1, test2), weighting)
-	print getWeightedDifference(test1, test2, weighting)
+	print getWeightedDifference(test2, test1, weighting)
 	#The expected weighted difference of the above should be: [0,0,2,4,6,8,10,12,14]
 
 	stddevs = [1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0]
