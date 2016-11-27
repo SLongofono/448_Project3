@@ -5,22 +5,6 @@
 import math
 
 
-## getVariance
-#  @brief Apply the functions in compareVec to the values in base, new
-#  @param base The user profile vector
-#  @param new a list of features to compare against the user vector
-#  @return A list of quantified differences for each feature
-#  @details Each of the functions in compareVec is called using the
-#	   Cartesian product of base and new.  The resultant list of
-#	   differences is returned.
-def getVariance(base, new):
-	results = []
-	for i in range(len(base)):
-		results.append(compareVec[i](base[i], new[i]))
-
-	return results
-
-
 ## getNewWeight
 # @brief Create a relative weight vector using standard deviations of features
 # @param stddevs A list of the standard deviations for each numerical feature
@@ -48,6 +32,37 @@ def getNewWeight(stddevs):
 
 	return newWeight
 
+
+## getVariance
+#  @brief Apply the functions in compareVec to the values in base, new
+#  @param base The user profile vector
+#  @param new a list of features to compare against the user vector
+#  @return A list of quantified differences for each feature
+#  @details Each of the functions in compareVec is called using the
+#	   Cartesian product of base and new.  The resultant list of
+#	   differences is returned.
+def getVariance(base, new):
+	results = []
+	for i in range(len(base)):
+		results.append(compareVec[i](base[i], new[i]))
+
+	return results
+
+
+## getWeightedDifference
+#  @brief Computes the vector difference and applies weighting to song vectors
+#  @param base The user profile vector
+#  @param new a list of features to compare against the user vector
+#  @param weighting a list of numeric weights associated with each feature
+#  @return A list of weighted, quantified differences for each feature
+#  @details This is a convenience function for getting a weighted difference
+#	of any two songs vectors.  getVariance is called on the two song vectors
+#	to yield a list of 10 numbers representing the difference, and then the
+#	weighting vector is applied to scale each difference element.
+def getWeightedDifference(base, new, weighting):
+	return weight(getVariance(base, new), weighting)
+
+
 ## filter2Sigma
 # @brief generates a binary filtering list with which to filter a list of songs
 # @param songVectors
@@ -72,19 +87,6 @@ def filter2Sigma(songVectors, averages, stddevs):
 		else:
 			results.append(0)
 	return results
-
-## getWeightDifference
-#  @brief Computes the vector difference and applies weighting to song vectors
-#  @param base The user profile vector
-#  @param new a list of features to compare against the user vector
-#  @param weighting a list of numeric weights associated with each feature
-#  @return A list of weighted, quantified differences for each feature
-#  @details This is a convenience function for getting a weighted difference
-#	of any two songs vectors.  getVariance is called on the two song vectors
-#	to yield a list of 10 numbers representing the difference, and then the
-#	weighting vector is applied to scale each difference element.
-def getWeightedDifference(base, new, weighting):
-	return weight(getVariance(base, new), weighting)
 
 
 ##  listVariance
@@ -116,6 +118,7 @@ def listVariance(base, new):
 def valueVariance(base, new):
     return math.fabs(base-new)
 
+
 ## weight
 # @brief Apply weighting to a song vector
 # @param diffVec a song difference vector to be weighted
@@ -126,6 +129,7 @@ def valueVariance(base, new):
 #	as a weighting vector will have 10 numeric values but a song vector will only have 8.
 def weight(diffVec, weightVec):
 	return [x*y for x,y in zip(diffVec,weightVec)]
+
 
 # @var compareVec
 #  @brief A list of functions to compute variance of two vectors
