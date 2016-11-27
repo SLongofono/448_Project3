@@ -20,6 +20,35 @@ def getVariance(base, new):
 
 	return results
 
+
+## getNewWeight
+# @brief Create a relative weight vector using standard deviations of features
+# @param stddevs A list of the standard deviations for each numerical feature
+# @return A relative weight vector of length 10
+# @details This method uses a list of standard deviations to determine which of
+#	the features is the most specific, i.e. which has the smalles standard
+#	deviation.  This is used in a scaling factor to determine the relative
+#	weight of each feature, as calculated by the minimum standard deviation
+#	divided by the ith standard deviation.  Assumes that the first two
+#	entries in the resultant weighting vector are binary (always weighted
+#	at unity)
+def getNewWeight(stddevs):
+	newWeight = [1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0]
+
+	# Find minimum spread about mean
+	minSigma = 100
+	for i in stddevs:
+		if i < minSigma:
+			minSigma = i
+
+	# normalize to this spread in a scaling vector
+	# Skip first two, artist and genre have binary weight
+	for i in range(len(stddevs)):
+		newWeight[i+2] *= (minSigma/stddevs[i])
+
+	return newWeight
+
+
 ## getWeightDifference
 #  @brief Computes the vector difference and applies weighting to song vectors
 #  @param base The user profile vector
@@ -106,3 +135,7 @@ if __name__ == '__main__':
 #	print weight(getVariance(test1, test2), weighting)
 	print getWeightedDifference(test1, test2, weighting)
 	#The expected weighted difference of the above should be: [0,0,2,4,6,8,10,12,14]
+
+	stddevs = [1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0]
+	print getNewWeight(stddevs)
+	# should produce [1, 1, 1, 0.5, 0.33, 0.25, 0.2, 0.166, 0.143, 0.125]
