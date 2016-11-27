@@ -121,14 +121,19 @@ class User():
 		self.profile = self.profile[:2] + averages
 		self.prettyPrintProfile()
 
+	##	calculateStandardDeviation
+	# @brief Calculates and updates the Current StdDev of the saved song vectors
+	# @return void
+	# #details This method is used to evaluate the stddev of each column of the NUMERICS table;
+	# 	each column being representative of all of the user's audio features associated with the
+	#	they've saved. Requires DB initialization and that the NUMERICS table has been filled.
 	def caluculateStandardDeviation(self):
 		print 'Assembling Standard Deviations ...'
 		payload = [self.db.execute("SELECT " + x + " FROM NUMERICS;") for x in self.labels[2:]]
 		stdDev = []
 		for column in payload:
 			mean=sum(column)/len(column)
-		selfstdDev.append((sum( (x-mean)**2.0 for x in row ) / float(len(row)) )**0.5))
-
+		self.stdDev.append((sum( (x-mean)**2.0 for x in row ) / float(len(row)) )**0.5))
 
 	## saveStatus
 	# @brief Saves the current user profile vector and any new songs to the user database
