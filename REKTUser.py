@@ -33,7 +33,7 @@ class User():
 		self.logfile = logfile
 		self.debug = debug
 		self.profile = None
-		self.stdDev = None
+		self.stdDevs = None
 		self.labels = ['artists', 'genres', 'popularity', 'acousticness', 'danceability', 'energy', 'instrumentalness', 'key', 'liveness', 'valence']
 		self.addVector =[
                             Mutators.artistMutator,
@@ -123,19 +123,20 @@ class User():
 		self.profile = self.profile[:2] + averages
 		self.prettyPrintProfile()
 
-	##	calculateStandardDeviation
+	## calculateStandardDeviation
 	# @brief Calculates and updates the Current StdDev of the saved song vectors
 	# @return void
 	# #details This method is used to evaluate the stddev of each column of the NUMERICS table;
 	# 	each column being representative of all of the user's audio features associated with the
 	#	they've saved. Requires DB initialization and that the NUMERICS table has been filled.
-	def caluculateStandardDeviation(self):
+	def calculateStandardDeviation(self):
 		print 'Assembling Standard Deviations ...'
 		payload = [self.db.execute("SELECT " + x + " FROM NUMERICS;") for x in self.labels[2:]]
 		stdDev = []
 		for column in payload:
-			mean=sum(column)/len(column)
-		self.stdDev.append((sum( (x-mean)**2.0 for x in row ) / float(len(row)) )**0.5))
+			mean=sum([x[0] for x in column])/len([x[0] for x in column])
+			stdDev.append( (sum( (x-mean)**2.0 for x in row ) / float(len(row)) )**0.5 )
+		self.stdDevs = stdDev
 
 	## saveStatus
 	# @brief Saves the current user profile vector and any new songs to the user database
@@ -177,11 +178,18 @@ class User():
 			except:
 				pass
 
-		# TODO Add in new standard deviations to db
+		self.calculateAverages()
+		self.calculateStandardDeviations()
 
 		print "Saving user profile..."
 		for i in range(len(self.profile[2:])):
 			self.db.execute("UPDATE profile SET " + self.labels[i+2] + "=" + str(self.profile[i+2]) + ";")
+			self.db.execute("UPDATE deviations SET " + self.labels[i+2] + "=" + str(self.profile[i+2]) + ";")
+
+
+		newWeight = Variance.getNewWeight(self.stdDevs)
+		for i in range(2, len(newWeight)):
+			self.db.execute("UPDATE weight SET " + self.labels[i] + "=" + str(newWeight[i]) + ";")
 
 		self.db.commit()
 
