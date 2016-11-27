@@ -116,6 +116,7 @@ class User():
 		self.profile = self.profile[:2] + averages
 		self.prettyPrintProfile()
 
+	
 
 	## saveStatus
 	# @brief Saves the current user profile vector and any new songs to the user database
@@ -142,7 +143,7 @@ class User():
 
 		for each in newGenres:
 			try:
-				self.db.execute("INSERT INTO genress(name) values(?);", each)
+				self.db.execute("INSERT INTO genres(name) values(?);", each)
 			except:
 				pass
 
