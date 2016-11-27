@@ -98,6 +98,7 @@ class User():
 		self.profile.append(map(lambda x: x[0], self.db.execute("SELECT name FROM genres")))
 		self.calculateAverages()
 
+
 	## calculateAverages
 	# @brief update the user profile with the current average of numeric values in the user database
 	# @return void
@@ -142,7 +143,7 @@ class User():
 
 		for each in newGenres:
 			try:
-				self.db.execute("INSERT INTO genress(name) values(?);", each)
+				self.db.execute("INSERT INTO genres(name) values(?);", each)
 			except:
 				pass
 
@@ -278,9 +279,3 @@ if __name__ == '__main__':
 
 	print "\n\nMost similar new song is: "
 	print bestSong, " with a total difference ", bestVal
-
-
-#	print "\n\nEntering interactive demo..."
-
-#	command = "python Compare_Songs.py "
-#	os.system(command)'''
