@@ -33,6 +33,7 @@ class User():
 		self.logfile = logfile
 		self.debug = debug
 		self.profile = None
+		self.stdDev = None
 		self.labels = ['artists', 'genres', 'popularity', 'acousticness', 'danceability', 'energy', 'instrumentalness', 'key', 'liveness', 'valence']
 		self.addVector =[
                             Mutators.artistMutator,
@@ -98,8 +99,10 @@ class User():
 		self.profile.append(map(lambda x: x[0], self.db.execute("SELECT name FROM artists")))
 		self.profile.append(map(lambda x: x[0], self.db.execute("SELECT name FROM genres")))
 		self.calculateAverages()
+		self.calculateStandardDeviation()
 		print "Saving user profile..."
 		self.db.execute("INSERT INTO profile(popularity,acousticness,danceability,energy,instrumentalness,key,liveness,valence) VALUES(?,?,?,?,?,?,?,?);", tuple(self.profile[2:]))
+		self.db.execute("INSERT INTO deviatons(popularity, acoutsticness,danceability,energy,instrumentalness,key,liveness,valence) VALUES(?,?,?,?,?,?,?,?);", tuple(self.stdDev))
 		self.db.commit()
 
 	## calculateAverages
@@ -120,7 +123,19 @@ class User():
 		self.profile = self.profile[:2] + averages
 		self.prettyPrintProfile()
 
-	
+	##	calculateStandardDeviation
+	# @brief Calculates and updates the Current StdDev of the saved song vectors
+	# @return void
+	# #details This method is used to evaluate the stddev of each column of the NUMERICS table;
+	# 	each column being representative of all of the user's audio features associated with the
+	#	they've saved. Requires DB initialization and that the NUMERICS table has been filled.
+	def caluculateStandardDeviation(self):
+		print 'Assembling Standard Deviations ...'
+		payload = [self.db.execute("SELECT " + x + " FROM NUMERICS;") for x in self.labels[2:]]
+		stdDev = []
+		for column in payload:
+			mean=sum(column)/len(column)
+		self.stdDev.append((sum( (x-mean)**2.0 for x in row ) / float(len(row)) )**0.5))
 
 	## saveStatus
 	# @brief Saves the current user profile vector and any new songs to the user database
