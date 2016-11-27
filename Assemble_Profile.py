@@ -302,4 +302,4 @@ if __name__ == '__main__':
 		print "Song Genres: "
 		cursor = conn.execute("SELECT * FROM genres")
 		for i in cursor:
-print i
+			print i
