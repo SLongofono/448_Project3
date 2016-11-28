@@ -61,6 +61,43 @@ class User():
 			self.addVector[i](newVal=newDataVector[i], debug=self.debug)
 
 
+	## calculateAverages
+	# @brief update the user profile with the current average of numeric values in the user database
+	# @return void
+	# @details This method is used to evaluate the mean of each column in the "numerics" table for the
+	#	user.  It is assumed that the database has been initialized, and that the "numerics" table
+	# 	already exists.
+	def calculateAverages(self):
+		print 'Assembling averages...'
+		payload = [self.db.execute("SELECT " + x + " FROM numerics;") for x in self.labels[2:]]
+
+		averages = []
+		for column in payload:
+			data = [x[0] for x in column]
+			averages.append(sum(data)/len(data))
+		print averages
+		self.profile = self.profile[:2] + averages
+		self.prettyPrintProfile()
+
+
+	## calculateStandardDeviation
+	# @brief Calculates and updates the Current StdDev of the saved song vectors
+	# @return void
+	# #details This method is used to evaluate the stddev of each column of the NUMERICS table;
+	# 	each column being representative of all of the user's audio features associated with the
+	#	they've saved. Requires DB initialization and that the NUMERICS table has been filled.
+	def calculateStandardDeviations(self):
+		print 'Assembling Standard Deviations ...'
+		payload = [self.db.execute("SELECT " + x + " FROM numerics;") for x in self.labels[2:]]
+		stdDev = []
+		for column in payload:
+			vals = [x[0] for x in column]
+			Nval = len(vals)
+			mean = sum(vals)/Nval
+			stdDev.append((sum([(x-mean)**2 for x in vals])/Nval)**0.5)
+		self.stdDevs = stdDev
+
+
 	## getSongDifferences
 	# @brief Returns a list of the featurewise differences of each of a list of new song vectors and the user profile vector
 	# @param newSongVectors A list of song vectors to compare against
@@ -99,44 +136,14 @@ class User():
 		self.profile.append(map(lambda x: x[0], self.db.execute("SELECT name FROM artists")))
 		self.profile.append(map(lambda x: x[0], self.db.execute("SELECT name FROM genres")))
 		self.calculateAverages()
-		self.calculateStandardDeviation()
+		self.calculateStandardDeviations()
 		print "Saving user profile..."
+		weights = Variance.getNewWeight(self.stdDevs)
 		self.db.execute("INSERT INTO profile(popularity,acousticness,danceability,energy,instrumentalness,key,liveness,valence) VALUES(?,?,?,?,?,?,?,?);", tuple(self.profile[2:]))
-		self.db.execute("INSERT INTO deviatons(popularity, acoutsticness,danceability,energy,instrumentalness,key,liveness,valence) VALUES(?,?,?,?,?,?,?,?);", tuple(self.stdDev))
+		self.db.execute("INSERT INTO deviations(popularity, acousticness,danceability,energy,instrumentalness,key,liveness,valence) VALUES(?,?,?,?,?,?,?,?);", tuple(self.stdDevs))
+		self.db.execute("INSERT INTO weights(artists, genres, popularity, acousticness,danceability,energy,instrumentalness,key,liveness,valence) VALUES(?,?,?,?,?,?,?,?,?,?);", tuple(weights))
 		self.db.commit()
 
-	## calculateAverages
-	# @brief update the user profile with the current average of numeric values in the user database
-	# @return void
-	# @details This method is used to evaluate the mean of each column in the "numerics" table for the
-	#	user.  It is assumed that the database has been initialized, and that the "numerics" table
-	# 	already exists.
-	def calculateAverages(self):
-		print 'Assembling averages...'
-		payload = [self.db.execute("SELECT " + x + " FROM NUMERICS;") for x in self.labels[2:]]
-
-		averages = []
-		for column in payload:
-			data = [x[0] for x in column]
-			averages.append(sum(data)/len(data))
-		print averages
-		self.profile = self.profile[:2] + averages
-		self.prettyPrintProfile()
-
-	## calculateStandardDeviation
-	# @brief Calculates and updates the Current StdDev of the saved song vectors
-	# @return void
-	# #details This method is used to evaluate the stddev of each column of the NUMERICS table;
-	# 	each column being representative of all of the user's audio features associated with the
-	#	they've saved. Requires DB initialization and that the NUMERICS table has been filled.
-	def calculateStandardDeviation(self):
-		print 'Assembling Standard Deviations ...'
-		payload = [self.db.execute("SELECT " + x + " FROM NUMERICS;") for x in self.labels[2:]]
-		stdDev = []
-		for column in payload:
-			mean=sum([x[0] for x in column])/len([x[0] for x in column])
-			stdDev.append( (sum( (x-mean)**2.0 for x in row ) / float(len(row)) )**0.5 )
-		self.stdDevs = stdDev
 
 	## saveStatus
 	# @brief Saves the current user profile vector and any new songs to the user database
@@ -173,7 +180,6 @@ class User():
 		print "Saving new songs..."
 		for song in newSongs:
 			try:
-				# Note that this is special sqlite3 syntax, and would not otherwise work in Python
 				self.db.execute("INSERT INTO numerics(popularity, acousticness,danceability,energy,instrumentalness,key,liveness,valence) VALUES(?,?,?,?,?,?,?,?)", song)
 			except:
 				pass
@@ -189,7 +195,7 @@ class User():
 
 		newWeight = Variance.getNewWeight(self.stdDevs)
 		for i in range(2, len(newWeight)):
-			self.db.execute("UPDATE weight SET " + self.labels[i] + "=" + str(newWeight[i]) + ";")
+			self.db.execute("UPDATE weights SET " + self.labels[i] + "=" + str(newWeight[i]) + ";")
 
 		self.db.commit()
 
