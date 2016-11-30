@@ -12,7 +12,6 @@ import functools
 import Compare_Songs
 import sqlite3
 import config_obj
-
 user = config_obj.get_user()
 localDB = config_obj.get_db()
 
@@ -100,9 +99,11 @@ class User():
 		self.profile.append(map(lambda x: x[0], self.db.execute("SELECT name FROM genres")))
 		self.calculateAverages()
 		self.calculateStandardDeviation()
+		weight = getNewWeight(self.stdDev):
 		print "Saving user profile..."
 		self.db.execute("INSERT INTO profile(popularity,acousticness,danceability,energy,instrumentalness,key,liveness,valence) VALUES(?,?,?,?,?,?,?,?);", tuple(self.profile[2:]))
-		self.db.execute("INSERT INTO deviatons(popularity, acoutsticness,danceability,energy,instrumentalness,key,liveness,valence) VALUES(?,?,?,?,?,?,?,?);", tuple(self.stdDev))
+		self.db.execute("INSERT INTO deviatons(popularity,acousticness,danceability,energy,instrumentalness,key,liveness,valence) VALUES(?,?,?,?,?,?,?,?);", tuple(self.stdDev))
+		self.db.execute("INSERT INTO weights(popularity,acousticness,danceability,energy,instrumentalness,key,liveness,valence) VALUES(?,?,?,?,?,?,?,?);", tuple(weight[2:]))
 		self.db.commit()
 
 	## calculateAverages

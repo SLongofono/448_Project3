@@ -14,7 +14,7 @@ def getPlaylist(user, name):
                                 return playlist['id']
                 #if no playlist has been found...
                 return sp.user_playlist_create(user, name, True)['id']
-            
+
 #playlist does not have to already exist - handled by getPlaylist function
 #songs = list of track ids
 def addToPlaylist(user, name, songs): #add songs parameter
@@ -44,7 +44,7 @@ def temp_test(user, query):
         if usageToken:
                 sp = spotipy.Spotify(auth=usageToken)
                 results = sp.search(query, 5)
-                
+
                 for track in results['tracks']['items']:
                         print track['id']
 
@@ -53,11 +53,10 @@ if __name__ == '__main__':
 		user = sys.argv[1]
 		playlist_name = 'test_playlist'
 		songs = ['6b2oQwSGFkzsMtQruIWm2p', '3SVAN3BRByDmHOhKyIDxfC', '045sp2JToyTaaKyXkGejPy', '7yMPuOVQEqpl7h1AQq4f2i', '5jafMI8FLibnjkYTZ33m0c']
-		
-		addToPlaylist(user, playlist_name, songs) 
+
+		addToPlaylist(user, playlist_name, songs)
 		#clearPlaylist(user, getPlaylist(user, playlist_name))
-		
+
 	else:
 		print 'Usage: %s username' % (sys.argv[0],)
 		sys.exit()
-

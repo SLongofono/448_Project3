@@ -34,12 +34,8 @@ def getVariance(base, new):
 #	at unity)
 def getNewWeight(stddevs):
 	newWeight = [1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0]
-
 	# Find minimum spread about mean
-	minSigma = 100
-	for i in stddevs:
-		if i < minSigma:
-			minSigma = i
+	minSigma = min(stddevs)
 
 	# normalize to this spread in a scaling vector
 	# Skip first two, artist and genre have binary weight

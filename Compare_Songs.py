@@ -18,10 +18,10 @@ scope = 'user-library-read'
 
 
 ##  compareFeatured
-# @brief Gets songs from featured playlists and returns a list of audio features 
+# @brief Gets songs from featured playlists and returns a list of audio features
 # @param user a user to establish a usageToken
 # @param lim the number of playlists to retrieve
-# @param debug prints debug info if true		
+# @param debug prints debug info if true
 # @return A list of vectorized versions of audio features
 # @details Grabs a number of spotify's featured playlists, as specified by the lim
 #         parameter. For each track within each playlist, it gets the audio features,
@@ -36,22 +36,22 @@ def compareFeatured(user, lim=20, debug=True):
 	if usageToken:
 		sp = spotipy.Spotify(auth=usageToken)
 		results = sp.featured_playlists(limit=lim)
-		
+
 		vectors = []
 		for playlist in results['playlists']['items']:
 			results = sp.user_playlist_tracks(user="spotify", playlist_id=playlist['id'])
-			
+
 			for item in results['items']:
 				track = item['track']
 				try:
 					featureVector = Assemble_Profile.getVectorFromTrack(sp, sp.audio_features([track['id']])[0], track['artists'])
 					vectors.append(featureVector)
 				except: pass
-			
-				
+
+
 		if debug:
 			print vectors
-			
+
 		return vectors
 
 
@@ -72,7 +72,7 @@ def compareNewReleases(user, lim=20, debug=False):
 	if usageToken:
 		sp = spotipy.Spotify(auth=usageToken)
 		results = sp.new_releases(limit=lim)
-		
+
 		vectors = []
 		for album in results['albums']['items']:
 			tracks = sp.album_tracks(album['id'])
@@ -81,10 +81,10 @@ def compareNewReleases(user, lim=20, debug=False):
 					featureVector = Assemble_Profile.getVectorFromTrack(sp, sp.audio_features([track['id']])[0], track['artists'])
 					vectors.append(featureVector)
 				except: pass
-		
+
 		if debug:
 			print vectors
-			
+
 		return vectors
 
 
@@ -108,19 +108,19 @@ def compareSearch(user, query, lim=20, debug=False):
 	if usageToken:
 		sp = spotipy.Spotify(auth=usageToken)
 		results = sp.search(query, limit=lim)
-		
+
 		vectors = []
 		for track in results['tracks']['items']:
 			try:
 				featureVector = Assemble_Profile.getVectorFromTrack(sp, sp.audio_features([track['id']])[0], track['artists'])
 				vectors.append(featureVector)
 			except: pass
-		
+
 		if debug:
 			print vectors
-		
+
 		return vectors
-		
+
 
 # a menu system to test the various comparison methods
 if __name__ == '__main__':
@@ -131,14 +131,14 @@ if __name__ == '__main__':
 				compareNewReleases(user, lim, True)
 			else:
 				print "Invalid input"
-		
+
 		elif command == "2":
 			lim = int(raw_input("How many new playlists would you like to compare (Max 10)?\n(Note: Playlists can be very long, requesting more than 1 playlist may take a long time)\n"))
 			if lim <= 10 and lim > 0:
 				compareFeatured(user, lim, True)
 			else:
 				print "Invalid input"
-			
+
 		elif command == "3":
 			query = raw_input("Please enter search query: ")
 			lim = int(raw_input("How many new releases would you like to compare (Max 50)? "))
@@ -146,7 +146,6 @@ if __name__ == '__main__':
 				compareSearch(user, query, lim, True)
 			else:
 				print "Invalid input"
-		
+
 		else:
 			print "Invalid command"
-
