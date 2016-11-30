@@ -17,7 +17,7 @@ user = config_obj.get_user()
 scope = 'user-library-read'
 
 # number of songs to fetch
-songLimit = 5
+songLimit = 15
 
 
 ## fetchNewSongs
@@ -72,6 +72,26 @@ def fetchFeaturedSongs(user, lim=songLimit):
 					pass
 
 	return vectors
+
+
+
+## fetchSongs
+# @brief Wrapper that fetches songLimit songs from new releases and featured songs and ranks them
+# @param
+# @param
+# @param
+# @param
+# @return A dictionary with Spotify track IDs as keys and weighted difference vectors as values
+# @details This method is a convenience which gathers songs, computes the weighted difference of each
+#	from the user profile vector, and returns a sorted dictionary consisting of the track IDs
+#	matched to the computed difference vectors.  This method was intended as a first pass, and
+#	to be called as many times as necessary to generate songs below a threshold difference for
+#	the user's playlist.
+def fetchSongs(user, averages, stddevs, weights):
+	songs = fetchNewSongs(user)
+	songs.update(fetchFeaturedSongs(user))
+	result = rankSongs(songs, averages, stddevs, weights)
+
 
 
 ## filterSongs
