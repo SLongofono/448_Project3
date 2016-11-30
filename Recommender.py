@@ -19,6 +19,13 @@ scope = 'user-library-read'
 # number of songs to fetch
 songLimit = 15
 
+## fetch
+# @brief Convenience wrapper to collect songs from both new and featured songs
+def fetch(user):
+	results = {}
+	results.update(fetchNewSongs(user))
+	results.update(fetchFeaturedSongs(user))
+	return results
 
 ## fetchNewSongs
 # @brief Gather and process a list of new songs to be compared with the user profile
@@ -28,11 +35,11 @@ def fetchNewSongs(user, lim=songLimit):
 						client_secret=user['client_secret'],
 						redirect_uri=user['redirect_uri'],
 						scope=scope)
+	vectors = {}
 	if usageToken:
 		sp = spotipy.Spotify(auth=usageToken)
 		results = sp.new_releases(limit=songLimit)
 
-		vectors = {}
 		for album in results['albums']['items']:
 			tracks = sp.album_tracks(album['id'])
 			for track in tracks['items']:
@@ -52,12 +59,12 @@ def fetchFeaturedSongs(user, lim=songLimit):
 						client_secret=user['client_secret'],
 						redirect_uri=user['redirect_uri'],
 						scope=scope)
+	vectors = {}
 	if usageToken:
 		sp = spotipy.Spotify(auth=usageToken)
 		# Grab the first 5 featured playlists
 		results = sp.featured_playlists(limit=5)
 
-		vectors = {}
 		for playlist in results['playlists']['items']:
 			results = sp.user_playlist_tracks(user="spotify", playlist_id=playlist['id'])
 
@@ -72,26 +79,6 @@ def fetchFeaturedSongs(user, lim=songLimit):
 					pass
 
 	return vectors
-
-
-
-## fetchSongs
-# @brief Wrapper that fetches songLimit songs from new releases and featured songs and ranks them
-# @param
-# @param
-# @param
-# @param
-# @return A dictionary with Spotify track IDs as keys and weighted difference vectors as values
-# @details This method is a convenience which gathers songs, computes the weighted difference of each
-#	from the user profile vector, and returns a sorted dictionary consisting of the track IDs
-#	matched to the computed difference vectors.  This method was intended as a first pass, and
-#	to be called as many times as necessary to generate songs below a threshold difference for
-#	the user's playlist.
-def fetchSongs(user, averages, stddevs, weights):
-	songs = fetchNewSongs(user)
-	songs.update(fetchFeaturedSongs(user))
-	result = rankSongs(songs, averages, stddevs, weights)
-
 
 
 ## filterSongs
@@ -139,14 +126,13 @@ def updateUser():
 
 if __name__ == "__main__":
 
-	vec2 = fetchNewSongs(user)
 #	for a,b in vec2.iteritems():
 #		print a, b
 
 	average = [[],[],0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
 	stddevs = [1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0]
 	weights = [1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0]
-
+	vec2 = fetchNewSongs(user)
 
 	x = rankSongs(vec2, average, stddevs, weights)
 	for a,b in x.iteritems():

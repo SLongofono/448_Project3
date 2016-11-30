@@ -9,7 +9,6 @@ import Mutators
 import traceback
 import Variance
 import functools
-import Compare_Songs
 import sqlite3
 import config_obj
 
@@ -48,6 +47,7 @@ class User():
                             Mutators.valenceMutator
 			]
 		self.processProfile()
+
 
 	## addData
 	# @brief Processes a new song vector into the user profile vector
@@ -199,6 +199,7 @@ class User():
 
 		self.db.commit()
 
+
 ## zipAll
 # @brief Helper function which implements zip for an arbitrary number of lists
 # @param columns a list of lists representing columns in a table
@@ -214,6 +215,7 @@ def zipAll(columns):
 		results.append(tuple(row))
 		i += 1
 	return results
+
 
 # Demonstration and ad-hoc testing below
 if __name__ == '__main__':
@@ -240,7 +242,7 @@ if __name__ == '__main__':
 	print "\n\nSaving modified profile..."
 	tester.saveStatus()
 
-	# Comparison
+'''	# Comparison
 	# Build test cases
 	newSongs = []
 	artists = ['The Unicorns','New Artist 1','new Artist 2','of Montreal','Mr. Bungle','RJD2', 'TV On The Radio', 'The Beatles', 'The Who', 'The Rolling Stones']
@@ -277,15 +279,11 @@ if __name__ == '__main__':
 	print bestSong, " with a total difference ", bestVal
 
 	print "\n\nFetching songs to compare against..."
-#	newReleases = Compare_Songs.compareNewReleases(user, lim=5)
-	newReleases = Compare_Songs.compareSearch(user, query="Elvis Costello", lim=10)
-
 
 	print "\n\nNew songs: "
 	print newReleases
 	for i in newReleases:
 		print i
-
 
 	diffs = tester.getSongDifferences(newReleases)
 	bestSong = None
@@ -299,3 +297,4 @@ if __name__ == '__main__':
 
 	print "\n\nMost similar new song is: "
 	print bestSong, " with a total difference ", bestVal
+'''
