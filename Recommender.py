@@ -11,13 +11,15 @@ import Assemble_Profile
 import config_obj
 import Variance
 import functools
+import random
 from collections import OrderedDict
 
 user = config_obj.get_user()
 scope = 'user-library-read'
 
 # number of songs to fetch
-songLimit = 15
+songLimit = 25
+
 
 ## fetch
 # @brief Convenience wrapper to collect songs from both new and featured songs
@@ -38,7 +40,8 @@ def fetchNewSongs(user, lim=songLimit):
 	vectors = {}
 	if usageToken:
 		sp = spotipy.Spotify(auth=usageToken)
-		results = sp.new_releases(limit=songLimit)
+		startPosition = random.randint(0, 100)
+		results = sp.new_releases(limit=songLimit, offset=startPosition)
 
 		for album in results['albums']['items']:
 			tracks = sp.album_tracks(album['id'])
@@ -63,7 +66,8 @@ def fetchFeaturedSongs(user, lim=songLimit):
 	if usageToken:
 		sp = spotipy.Spotify(auth=usageToken)
 		# Grab the first 5 featured playlists
-		results = sp.featured_playlists(limit=5)
+		startPosition = random.randint(0, 20)
+		results = sp.featured_playlists(limit=5, offset=startPosition)
 
 		for playlist in results['playlists']['items']:
 			results = sp.user_playlist_tracks(user="spotify", playlist_id=playlist['id'])
