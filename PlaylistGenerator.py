@@ -37,7 +37,7 @@ def getPlaylist(user, name):
 # @param name the name of the playlist
 # @param songs a list of spotify track ids
 # @return none
-# @details gets a playlist matching the name parameter. If none already exist, a new 
+# @details gets a playlist matching the name parameter. If none already exist, a new
 #         playlist will be created.  Then adds the list of songs to the playlist.
 #
 def addToPlaylist(user, name, songs): #add songs parameter
@@ -59,8 +59,8 @@ def addToPlaylist(user, name, songs): #add songs parameter
 # @param user the spotify username of the user
 # @param playlist_id the id of the spotify playlist
 # @param songs a list of spotify track ids
-# @details removes every song from a spotify playlist, leaving it empty. Note, the 
-#         playlist must be public for it to be found. The resulting playlist is not, 
+# @details removes every song from a spotify playlist, leaving it empty. Note, the
+#         playlist must be public for it to be found. The resulting playlist is not,
 #         removed, just empty.
 #
 def clearPlaylist(user, playlist_id):
@@ -76,18 +76,18 @@ def clearPlaylist(user, playlist_id):
                 track_ids = []
                 for track in playlist['tracks']['items']:
                         track_ids.append(track['track']['id'])
-                sp.user_playlist_remove_all_occurrences_of_tracks(user['username'], playlist_id, track_ids)
+                sp.user_playlist_remove_all_occurrences_of_tracks(user, playlist_id, track_ids)
+
 
 #testing method
 if __name__ == '__main__':
 	if len(sys.argv) > 1:
 		playlist_name = 'test_playlist'
 		songs = ['6b2oQwSGFkzsMtQruIWm2p', '3SVAN3BRByDmHOhKyIDxfC', '045sp2JToyTaaKyXkGejPy', '7yMPuOVQEqpl7h1AQq4f2i', '5jafMI8FLibnjkYTZ33m0c']
-		
-		addToPlaylist(user, playlist_name, songs) 
+
+		addToPlaylist(user, playlist_name, songs)
 		#clearPlaylist(user, getPlaylist(user, playlist_name))
-		
+
 	else:
 		print 'Usage: %s username' % (sys.argv[0],)
 		sys.exit()
-

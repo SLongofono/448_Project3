@@ -1,3 +1,16 @@
+Skip to content
+Personal Open source Business Explore
+Sign upSign inPricingBlogSupport
+This repository
+Search
+ Watch 3  Star 0  Fork 0 SLongofono/448_Project3
+ Code  Issues 19  Pull requests 0  Projects 0  Pulse  Graphs
+Branch: master Find file Copy path448_Project3/REKTUser.py
+564b870  4 hours ago
+@SLongofono SLongofono Full working run of playlist population
+2 contributors @SLongofono @smwiss326
+RawBlameHistory
+Executable File  301 lines (253 sloc)  11.8 KB
 ## @file REKTUser.py
 # REKTUser
 # @author Stephen Longofono
@@ -242,7 +255,7 @@ if __name__ == '__main__':
 	print "\n\nSaving modified profile..."
 	tester.saveStatus()
 
-'''	# Comparison
+	# Comparison
 	# Build test cases
 	newSongs = []
 	artists = ['The Unicorns','New Artist 1','new Artist 2','of Montreal','Mr. Bungle','RJD2', 'TV On The Radio', 'The Beatles', 'The Who', 'The Rolling Stones']
@@ -261,11 +274,9 @@ if __name__ == '__main__':
 			i
 			]
 		newSongs.append(newSong)
-
 	print "\n\nGenerated test songs to compare against:"
 	for i in newSongs:
 		print i
-
 	diffs = tester.getSongDifferences(newSongs)
 	bestSong = None
 	bestVal = 200000
@@ -274,17 +285,13 @@ if __name__ == '__main__':
 		if sum(diffs[i]) < bestVal:
 			bestVal = sum(diffs[i])
 			bestSong = newSongs[i][0][0]
-
 	print "\n\nMost similar test song is: "
 	print bestSong, " with a total difference ", bestVal
-
 	print "\n\nFetching songs to compare against..."
-
 	print "\n\nNew songs: "
 	print newReleases
 	for i in newReleases:
 		print i
-
 	diffs = tester.getSongDifferences(newReleases)
 	bestSong = None
 	bestVal = 200000
@@ -294,7 +301,5 @@ if __name__ == '__main__':
 			if sum(diffs[i]) < bestVal:
 				bestVal = sum(diffs[i])
 				bestSong = newReleases[i][0][0]
-
 	print "\n\nMost similar new song is: "
 	print bestSong, " with a total difference ", bestVal
-'''

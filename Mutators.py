@@ -1,5 +1,5 @@
 ## @file Mutators.py
-# Mutators 
+# Mutators
 # @brief A collection of functions used to incorporate new feature values into existing average values
 #
 

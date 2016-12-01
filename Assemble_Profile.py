@@ -248,9 +248,11 @@ def initializeDB(conn, songVectors):
 						valence DECIMAL NOT NULL);""")
 
 
+
+	# TODO calculate and populate averages
+	# TODO calculate and populate standard deviations
+
 	for song in songVectors:
-		artists = song[0]
-		genres = song[1]
 		nums = song[2:]
 		artistQueries = [insertSingle('artists', 'name', x) for x in song[0]]
 		genreQueries = [insertSingle('genres', 'name', x) for x in song[1]]
@@ -275,6 +277,13 @@ def initializeDB(conn, songVectors):
 			conn.execute(valueQuery)
 		except:
 			traceback.print_exc()
+
+
+## updateSongsDB
+# @brief Adds new songs in the user's library to the database
+# TODO write me
+
+
 
 		# Make it so
 		conn.commit()
