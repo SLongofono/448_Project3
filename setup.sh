@@ -46,6 +46,13 @@ python SpotipyMod.py
 
 if [ $? -ne 0 ] ; then echo "Failed to update Spotipy, you may have a bad time with the rest of the installation"; exit; fi
 
+# Prompt the user for configuration information
+echo " [ creating configuration files  ]"
+python create_config.py
+
+if [ $? -ne 0 ] ; then echo "Failed to set up configuration file, please verify that you have ConfigParser in your Python installation"; exit; fi
+
+
 echo
 echo " [ Success ] "
 echo
