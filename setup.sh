@@ -53,6 +53,18 @@ python create_config.py
 if [ $? -ne 0 ] ; then echo "Failed to set up configuration file, please verify that you have ConfigParser in your Python installation"; exit; fi
 
 
+# Ensure that the necessary secure connection libraries are present
+echo " [ updating to latest secure connection libraries (if necessary) ]"
+pip install urllib3[secure]
+
+if [ $? -ne 0 ] ; then 
+echo "Failed to set up secure http tools"; 
+echo "Please check the output above, you may need to install these dependencies manually";
+echo "See https://urllib3.readthedocs.io/en/latest/user-guide.html#ssl-py2 for more details";
+exit;
+fi
+
+
 echo
 echo " [ Success ] "
 echo

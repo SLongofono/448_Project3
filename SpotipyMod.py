@@ -6,8 +6,13 @@ Credit to Github user sepehr for his quick fix, which has been sitting on the is
 https://github.com/plamere/spotipy/pull/30
 Accessed November 2016
 '''
+import os
 
-sourceDir = 'spottie/lib64/python2.7/site-packages/spotipy/util.py'
+if os.path.exists('spottie/lib64/python2.7/site-packages/spotipy/util.py'):
+	sourceDir = 'spottie/lib64/python2.7/site-packages/spotipy/util.py'
+else:
+	sourceDir = 'spottie/lib/python2.7/site-packages/spotipy/util.py'
+
 badLine = 'subprocess.call(["open", auth_url])'
 tab= "            "
 replacement = 'stdout = os.dup(1)\n' + tab + 'stderr = os.dup(2)\n' + tab + 'os.close(1)\n' + tab + 'os.close(2)\n' + tab + 'os.open(os.devnull, os.O_RDWR)\n' + tab + 'webbrowser.open(auth_url, new=1)\n' + tab + 'os.dup2(stdout, 1)\n' + tab + 'os.dup2(stderr, 2)'
