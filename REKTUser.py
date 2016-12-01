@@ -9,7 +9,6 @@ import Mutators
 import traceback
 import Variance
 import functools
-import Compare_Songs
 import sqlite3
 import config_obj
 
