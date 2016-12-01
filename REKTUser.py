@@ -1,16 +1,3 @@
-Skip to content
-Personal Open source Business Explore
-Sign upSign inPricingBlogSupport
-This repository
-Search
- Watch 3  Star 0  Fork 0 SLongofono/448_Project3
- Code  Issues 19  Pull requests 0  Projects 0  Pulse  Graphs
-Branch: master Find file Copy path448_Project3/REKTUser.py
-564b870  4 hours ago
-@SLongofono SLongofono Full working run of playlist population
-2 contributors @SLongofono @smwiss326
-RawBlameHistory
-Executable File  301 lines (253 sloc)  11.8 KB
 ## @file REKTUser.py
 # REKTUser
 # @author Stephen Longofono
@@ -22,6 +9,7 @@ import Mutators
 import traceback
 import Variance
 import functools
+import Compare_Songs
 import sqlite3
 import config_obj
 
@@ -60,7 +48,6 @@ class User():
                             Mutators.valenceMutator
 			]
 		self.processProfile()
-
 
 	## addData
 	# @brief Processes a new song vector into the user profile vector
@@ -212,7 +199,6 @@ class User():
 
 		self.db.commit()
 
-
 ## zipAll
 # @brief Helper function which implements zip for an arbitrary number of lists
 # @param columns a list of lists representing columns in a table
@@ -228,7 +214,6 @@ def zipAll(columns):
 		results.append(tuple(row))
 		i += 1
 	return results
-
 
 # Demonstration and ad-hoc testing below
 if __name__ == '__main__':
@@ -286,20 +271,4 @@ if __name__ == '__main__':
 			bestVal = sum(diffs[i])
 			bestSong = newSongs[i][0][0]
 	print "\n\nMost similar test song is: "
-	print bestSong, " with a total difference ", bestVal
-	print "\n\nFetching songs to compare against..."
-	print "\n\nNew songs: "
-	print newReleases
-	for i in newReleases:
-		print i
-	diffs = tester.getSongDifferences(newReleases)
-	bestSong = None
-	bestVal = 200000
-	for i in range(len(newReleases)):
-		if len(newReleases[i][0]) > 0:
-			print "Artist: ", newReleases[i][0][0], " Difference: ", sum(diffs[i])
-			if sum(diffs[i]) < bestVal:
-				bestVal = sum(diffs[i])
-				bestSong = newReleases[i][0][0]
-	print "\n\nMost similar new song is: "
 	print bestSong, " with a total difference ", bestVal

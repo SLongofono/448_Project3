@@ -1,9 +1,6 @@
 import sys
 import spotipy
 import spotipy.util as util
-import config_obj
-
-user = config_obj.get_user()
 
 ##  getPlaylist
 # @brief finds a playlist of a given name, or creates a new playlist if none are found
@@ -17,19 +14,15 @@ user = config_obj.get_user()
 #
 def getPlaylist(user, name):
         scope = 'playlist-modify-public'
-        usageToken = util.prompt_for_user_token(username=user['username'],
-						client_id=user['client_id'],
-						client_secret=user['client_secret'],
-						redirect_uri=user['redirect_uri'],
-						scope=scope)
+        usageToken = util.prompt_for_user_token(user, scope)
         if usageToken:
 		sp = spotipy.Spotify(auth=usageToken)
-		user_playlists = sp.user_playlists(user['username'])
+		user_playlists = sp.user_playlists(user)
 		for playlist in user_playlists['items']:
                         if playlist['name'] == name:
                                 return playlist['id']
                 #if no playlist has been found...
-                return sp.user_playlist_create(user['username'], name, True)['id']
+                return sp.user_playlist_create(user, name, True)['id']
 
 ##  addToPlaylist
 # @brief adds a list of songs to a spotify playlist
@@ -42,15 +35,11 @@ def getPlaylist(user, name):
 #
 def addToPlaylist(user, name, songs): #add songs parameter
         scope = 'playlist-modify-public'
-        usageToken = util.prompt_for_user_token(username=user['username'],
-						client_id=user['client_id'],
-						client_secret=user['client_secret'],
-						redirect_uri=user['redirect_uri'],
-						scope=scope)
+        usageToken = util.prompt_for_user_token(user, scope)
         if usageToken:
 		sp = spotipy.Spotify(auth=usageToken)
 		playlist_id = getPlaylist(user, name)
-		sp.user_playlist_add_tracks(user['username'], playlist_id, songs)
+		sp.user_playlist_add_tracks(user, playlist_id, songs)
 
 #removes all tracks but does not delete playlist (leaves an empty playlist)
 
@@ -65,23 +54,20 @@ def addToPlaylist(user, name, songs): #add songs parameter
 #
 def clearPlaylist(user, playlist_id):
         scope = 'playlist-modify-public'
-        usageToken = util.prompt_for_user_token(username=user['username'],
-						client_id=user['client_id'],
-						client_secret=user['client_secret'],
-						redirect_uri=user['redirect_uri'],
-						scope=scope)
+        usageToken = util.prompt_for_user_token(user, scope)
         if usageToken:
                 sp = spotipy.Spotify(auth=usageToken)
-                playlist = sp.user_playlist(user['username'], playlist_id)
+                playlist = sp.user_playlist(user, playlist_id)
                 track_ids = []
                 for track in playlist['tracks']['items']:
                         track_ids.append(track['track']['id'])
-                sp.user_playlist_remove_all_occurrences_of_tracks(user, playlist_id, track_ids)
 
+                sp.user_playlist_remove_all_occurrences_of_tracks(user['username'], playlist_id, track_ids)
 
 #testing method
 if __name__ == '__main__':
 	if len(sys.argv) > 1:
+		user = sys.argv[1]
 		playlist_name = 'test_playlist'
 		songs = ['6b2oQwSGFkzsMtQruIWm2p', '3SVAN3BRByDmHOhKyIDxfC', '045sp2JToyTaaKyXkGejPy', '7yMPuOVQEqpl7h1AQq4f2i', '5jafMI8FLibnjkYTZ33m0c']
 
