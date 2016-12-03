@@ -66,10 +66,34 @@ def testAddSongs():
                 return (playlistLength == 5)
 
 def testClearPlaylist():
+        songs = ['6b2oQwSGFkzsMtQruIWm2p', '3SVAN3BRByDmHOhKyIDxfC', '045sp2JToyTaaKyXkGejPy', '7yMPuOVQEqpl7h1AQq4f2i', '5jafMI8FLibnjkYTZ33m0c']
+        PlaylistGenerator.addToPlaylist(user, 'test_playlist', songs)
+        
         playlist_id = PlaylistGenerator.getPlaylist(user, 'test_playlist')
         PlaylistGenerator.clearPlaylist(user, playlist_id)
+        
+        scope = 'playlist-modify-public'
+        usageToken = util.prompt_for_user_token(username=user['username'],
+						client_id=user['client_id'],
+						client_secret=user['client_secret'],
+						redirect_uri=user['redirect_uri'],
+						scope=scope)
+        if usageToken:
+		sp = spotipy.Spotify(auth=usageToken)
+		
+		#playlist_id = PlaylistGenerator.getPlaylist(user, 'test_playlist')
+		playlist = sp.user_playlist(user['username'], playlist_id)
+		
+		playlistLength = 0
+		for track in playlist['tracks']['items']:
+                        playlistLength += 1
+                
+                return (playlistLength == 0)
+            
+def testAllPlaylist():
+        print "Testing ability to create new playlist... " + "Passed." if testNewPlaylist() else "Failed."
+        print "Testing ability to add songs to a playlist... " + "Passed." if testAddSongs() else "Failed."
+        print "Testing ability to remove all songs from a playlist... " + "Passed." if testClearPlaylist() else "Failed."
 
 if __name__ == '__main__':
-        print testNewPlaylist()
-        print testAddSongs()
-        print testClearPlaylist()
+        testAllPlaylist()
