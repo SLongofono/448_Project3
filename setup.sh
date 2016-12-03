@@ -9,7 +9,7 @@
 # 2. Run 'chmod +x setup.sh' from the command line to allow this script to execute
 # 3. Run this script './setup.sh'
 # 4. If all is well, your environment is ready
-# 5. Start your virtual environment by typing 'source spotifyVenv/bin/activate'
+# 5. Start your virtual environment by typing 'source spottie/bin/activate'
 # 6. Stop your virtual environment by typing 'deactivate'
 #
 # Created by Stephen Longofono
