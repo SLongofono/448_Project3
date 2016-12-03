@@ -40,7 +40,7 @@ def getPlaylist(user, name):
 # @details gets a playlist matching the name parameter. If none already exist, a new
 #         playlist will be created.  Then adds the list of songs to the playlist.
 #
-def addToPlaylist(user, name, songs): #add songs parameter
+def addToPlaylist(user, name, songs):
         scope = 'playlist-modify-public'
         usageToken = util.prompt_for_user_token(username=user['username'],
 						client_id=user['client_id'],
@@ -52,7 +52,6 @@ def addToPlaylist(user, name, songs): #add songs parameter
 		playlist_id = getPlaylist(user, name)
 		sp.user_playlist_add_tracks(user['username'], playlist_id, songs)
 
-#removes all tracks but does not delete playlist (leaves an empty playlist)
 
 ##  clearPlaylist
 # @brief removes all songs from a user playlist
