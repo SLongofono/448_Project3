@@ -19,12 +19,16 @@ import math
 def getNewWeight(stddevs):
 	newWeight = [1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0]
 	# Find minimum spread about mean
-	minSigma = min(stddevs)
+	try:
+		minSigma = min(stddevs)
+  	except ValueError:
+		print "***ERROR - min() received empty sequence as arg*** "
+		return -1
 
 	# normalize to this spread in a scaling vector
 	# Skip first two, artist and genre have binary weight
 	for i in range(len(stddevs)):
-		newWeight[i+2] *= (minSigma/stddevs[i])
+		newWeight[i+2] *= round((minSigma/stddevs[i]),3)
 
 	return newWeight
 
@@ -40,7 +44,11 @@ def getNewWeight(stddevs):
 def getVariance(base, new):
 	results = []
 	for i in range(len(base)):
-		results.append(compareVec[i](base[i], new[i]))
+		try:
+			results.append(compareVec[i](base[i], new[i]))
+		except IndexError:
+			print("***ERROR - One of the lists is empty!***")
+			return -1
 
 	return results
 
@@ -126,7 +134,11 @@ def valueVariance(base, new):
 #	a piecewise multiplication.  This method should only be applied to difference vectors,
 #	as a weighting vector will have 10 numeric values but a song vector will only have 8.
 def weight(diffVec, weightVec):
-	return [x*y for x,y in zip(diffVec,weightVec)]
+		try:
+			return [x*y for x,y in zip(diffVec,weightVec)]
+		except TypeError:
+			return -1
+
 
 
 # @var compareVec
@@ -156,26 +168,26 @@ if __name__ == '__main__':
 	test1 = [['artist1', 'artist2', 'artist3'],['genre1', 'genre2', 'genre3'],0,0,0,0,0,0,0,0]
 	test2 = [['artist1'],['genre1', 'genre2'],1,2,3,4,5,6,7,8]
 	print getVariance(test1, test2)
-	#The expected difference of the above should be: [0,0,1,2,3,4,5,6,7]
+	print "The expected difference of the above should be: [0,0,1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0]"
 
 #	print weight(getVariance(test1, test2), weighting)
 	print getWeightedDifference(test2, test1, weighting)
-	#The expected weighted difference of the above should be: [0,0,2,4,6,8,10,12,14]
+	print "The expected weighted difference of the above should be: [0,0,2.0,4.0,6.0,8.0,10.0,12.0,14.0,16.0]"
 
 	stddevs = [1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0]
 	print getNewWeight(stddevs)
-	# should produce [1, 1, 1, 0.5, 0.33, 0.25, 0.2, 0.166, 0.143, 0.125]
+	print "should produce [1, 1, 1, 0.5, 0.333, 0.25, 0.2, 0.167, 0.143, 0.125]"
 
-	averages = [10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0]
+	averages = [[],[],10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0]
 	stddevs = [2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0]
 	testSongs = [
-		[10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0],
-		[6.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0],
-		[10.0,10.0,10.0,10.0,10.0,10.0,10.0,14.0],
-		[5.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0],
-		[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],
-		[15.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0],
-		[10.0,10.0,10.0,10.0,10.0,10.0,10.0,15.0],
+		[[],[], 10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0],
+		[[],[], 6.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0],
+		[[],[], 10.0,10.0,10.0,10.0,10.0,10.0,10.0,14.0],
+		[[],[], 5.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0],
+		[[],[], 0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],
+		[[],[], 15.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0],
+		[[],[], 10.0,10.0,10.0,10.0,10.0,10.0,10.0,15.0],
 		]
 
 	print filter2Sigma(testSongs, averages, stddevs)
