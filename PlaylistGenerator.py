@@ -75,7 +75,7 @@ def clearPlaylist(user, playlist_id):
                 track_ids = []
                 for track in playlist['tracks']['items']:
                         track_ids.append(track['track']['id'])
-                sp.user_playlist_remove_all_occurrences_of_tracks(user, playlist_id, track_ids)
+                sp.user_playlist_remove_all_occurrences_of_tracks(user['username'], playlist_id, track_ids)
 
 
 #testing method
