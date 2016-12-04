@@ -91,7 +91,7 @@ def getTracksUserAccount(sp, limit=20, index=0):
 #         songs, or if some other errors are preventing the API calls from completing, the
 #         method will abandon its task after 3 failures
 #
-def getUserSongVectors(user):
+def getUserSongVectors(user, numCalls=50, numEntries=20):
 	usageToken = util.prompt_for_user_token(username=user['username'],
 						client_id=user['client_id'],
 						client_secret=user['client_secret'],
@@ -104,10 +104,10 @@ def getUserSongVectors(user):
 		sp = spotipy.Spotify(auth=usageToken)
 		vectors = []
 		# Fetch up to the first 1000 songs to establish a data set
-		for i in range (50):
+		for i in range (numCalls):
 			try:
 				print "Getting batch..."
-				library = getTracksUserAccount(sp, index=(20*i))
+				library = getTracksUserAccount(sp, index=(numEntries*i))
 				print "Processing songs..."
 				if len(library['items']) > 0:
 					for item in library['items']:

@@ -18,6 +18,8 @@ def testNewPlaylist():
 		
 		#run twice to make sure not creating multiple playlists
 		for i in range(2):
+                        print "Creating/searching for playlist 'test_playlist'"
+                        
                         PlaylistGenerator.getPlaylist(user, 'test_playlist')
                         
                         user_playlists = sp.user_playlists(user['username'])
@@ -27,6 +29,8 @@ def testNewPlaylist():
                                         playlistNum += 1
                         if playlistNum != 1:
                                 return False;
+                            
+                        print "Playlist found"
                 
                 return True;
                 
@@ -35,8 +39,10 @@ def testAddSongs():
         #some pre-pulled song ids to test with
         songs = ['6b2oQwSGFkzsMtQruIWm2p', '3SVAN3BRByDmHOhKyIDxfC', '045sp2JToyTaaKyXkGejPy', '7yMPuOVQEqpl7h1AQq4f2i', '5jafMI8FLibnjkYTZ33m0c']
         
+        print "Finding playlist"
         playlist_id = PlaylistGenerator.getPlaylist(user, 'test_playlist')
         PlaylistGenerator.clearPlaylist(user, playlist_id)
+        print "Adding songs to playlist"
         PlaylistGenerator.addToPlaylist(user, 'test_playlist', songs)
         
         scope = 'playlist-modify-public'
@@ -51,6 +57,7 @@ def testAddSongs():
 		#playlist_id = PlaylistGenerator.getPlaylist(user, 'test_playlist')
 		playlist = sp.user_playlist(user['username'], playlist_id)
 		
+		print "Checking songs were added to playlist"
                 for id in songs:
                         foundMatch = False
                         for track in playlist['tracks']['items']:
@@ -69,7 +76,9 @@ def testClearPlaylist():
         songs = ['6b2oQwSGFkzsMtQruIWm2p', '3SVAN3BRByDmHOhKyIDxfC', '045sp2JToyTaaKyXkGejPy', '7yMPuOVQEqpl7h1AQq4f2i', '5jafMI8FLibnjkYTZ33m0c']
         PlaylistGenerator.addToPlaylist(user, 'test_playlist', songs)
         
+        print "Finding playlist"
         playlist_id = PlaylistGenerator.getPlaylist(user, 'test_playlist')
+        print "Clearing playlist"
         PlaylistGenerator.clearPlaylist(user, playlist_id)
         
         scope = 'playlist-modify-public'
@@ -84,6 +93,7 @@ def testClearPlaylist():
 		#playlist_id = PlaylistGenerator.getPlaylist(user, 'test_playlist')
 		playlist = sp.user_playlist(user['username'], playlist_id)
 		
+		print "Checking that playlist is cleared"
 		playlistLength = 0
 		for track in playlist['tracks']['items']:
                         playlistLength += 1
@@ -91,9 +101,14 @@ def testClearPlaylist():
                 return (playlistLength == 0)
             
 def testAllPlaylist():
-        print "Testing ability to create new playlist... " + "Passed." if testNewPlaylist() else "Failed."
-        print "Testing ability to add songs to a playlist... " + "Passed." if testAddSongs() else "Failed."
-        print "Testing ability to remove all songs from a playlist... " + "Passed." if testClearPlaylist() else "Failed."
+        print "\nTesting ability to create new playlist... "
+        print "Passed." if testNewPlaylist() else "Failed."
+        
+        print "\nTesting ability to add songs to a playlist... "
+        print "Passed." if testAddSongs() else "Failed."
+        
+        print "\nTesting ability to remove all songs from a playlist... " 
+        print "Passed." if testClearPlaylist() else "Failed."
 
 if __name__ == '__main__':
         testAllPlaylist()
