@@ -36,10 +36,14 @@ def testGetVectorFromTrack():
 
 def testAllAssembleProfile():
         print "\nTesting getUserSongVectors() method... "
-        print "Passed." if testGetUserSongVectors() else "Failed."
+        test1 = testGetUserSongVectors()
+        print "Passed." if test1 else "Failed."
                 
         print "\nTesting getVectorFromTrack() method... "
-        print "Passed." if testGetVectorFromTrack() else "Failed."
+        test2 = testGetVectorFromTrack()
+        print "Passed." if test2 else "Failed."
+        
+        return (test1 and test2)
 
 if __name__ == '__main__':
         testAllAssembleProfile()

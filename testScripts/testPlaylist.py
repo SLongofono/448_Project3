@@ -102,13 +102,18 @@ def testClearPlaylist():
             
 def testAllPlaylist():
         print "\nTesting ability to create new playlist... "
-        print "Passed." if testNewPlaylist() else "Failed."
+        test1 = testNewPlaylist()
+        print "Passed." if test1 else "Failed."
         
         print "\nTesting ability to add songs to a playlist... "
-        print "Passed." if testAddSongs() else "Failed."
+        test2 = testAddSongs()
+        print "Passed." if test2 else "Failed."
         
         print "\nTesting ability to remove all songs from a playlist... " 
-        print "Passed." if testClearPlaylist() else "Failed."
+        test3 = testClearPlaylist()
+        print "Passed." if test3 else "Failed."
+        
+        return (test1 and test2 and test3)
 
 if __name__ == '__main__':
         testAllPlaylist()
