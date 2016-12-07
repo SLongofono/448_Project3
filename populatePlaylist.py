@@ -25,7 +25,7 @@ tester = REKTUser.User()
 weights = Variance.getNewWeight(tester.stdDevs)
 results = OrderedDict()
 while(len(results) < newSongCount):
-	songs = Recommender.fetch(user)
+	songs = Recommender.fetch(user, tester.profile)
 	results.update(Recommender.rankSongs(songs, tester.profile, tester.stdDevs, weights))
 
 newTrackIDs = filterDifference(results)
