@@ -83,9 +83,10 @@ def filter2Sigma(songVectors, averages, stddevs):
 	for song in songVectors:
 		rejected = False
 		for i in range(len(stddevs)):
-			if math.fabs(song[i+2]-averages[i+2]) > (2*stddevs[i]):
-				rejected = True
-				break
+			if (song[i+2] != None):
+				if math.fabs(song[i+2]-averages[i+2]) > (2*stddevs[i]):
+					rejected = True
+					break
 		if not rejected:
 			results.append(1)
 		else:
