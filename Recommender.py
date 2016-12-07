@@ -13,6 +13,7 @@ import Variance
 import functools
 import random
 from collections import OrderedDict
+from collections import Counter
 
 user = config_obj.get_user()
 scope = 'user-library-read'
@@ -20,14 +21,18 @@ scope = 'user-library-read'
 # number of songs to fetch
 songLimit = 25
 
+# number of songs to fetch in a search query 
+queryLimit = 10
 
 ## fetch
 # @brief Convenience wrapper to collect songs from both new and featured songs
-def fetch(user):
+def fetch(user, profile):
 	results = {}
 	results.update(fetchNewSongs(user))
 	results.update(fetchFeaturedSongs(user))
+	results.update(fetchFromQuery(user, profile, lim=queryLimit))
 	return results
+
 
 ## fetchNewSongs
 # @brief Gather and process a list of new songs to be compared with the user profile
@@ -85,6 +90,32 @@ def fetchFeaturedSongs(user, lim=songLimit):
 	return vectors
 
 
+## fetchFromQuery
+# @ brief Uses the Spotify search API on the three highest frequency artists in the user profile
+def fetchFromQuery(user, profile, lim=songLimit):
+	usageToken = util.prompt_for_user_token(username=user['username'],
+						client_id=user['client_id'],
+						client_secret=user['client_secret'],
+						redirect_uri=user['redirect_uri'],
+						scope=scope)
+	if usageToken:
+		sp = spotipy.Spotify(auth=usageToken)
+		vectors = {}
+		# Get a histogram of the artists
+		counts = Counter(profile[0])
+		topThreeArtists = [x[0] for x in counts.most_common(3)]
+		for artist in topThreeArtists:
+			results = sp.search(str(artist), limit=lim)
+			print results
+			for track in results['tracks']['items']:
+				try:
+					featureVector = Assemble_Profile.getVectorFromTrack(sp, sp.audio_features([track['id']])[0], track['artists'])
+					vectors[track['id']] = featureVector
+				except: pass
+
+		return vectors
+
+
 ## filterSongs
 # @brief Apply the 2 sigma filter to a list of songs to rule out outliers
 # @details Assumes the songsDict is an ordered dictionary
@@ -130,16 +161,37 @@ def updateUser():
 
 if __name__ == "__main__":
 
-#	for a,b in vec2.iteritems():
-#		print a, b
+	logfile = open('test_recommender.txt','w')
 
-	average = [[],[],0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
+	average = [['The Pixies', 'The Pixies', 'The Pixies', 'The Pixies', 'The Pixies', 'The Pixies', 'The Pixies', 'The Pixies', 'Guttermouth', 'Guttermouth', 'Guttermouth', 'Guttermouth', 'Guttermouth', 'Guttermouth', 'Ween', 'Ween', 'Ween', 'Ween', 'Ween', 'Ween', 'Ween', 'Ween', 'Ween', 'Ween', 'Ween', 'Ween', 'Ween', 'Ween', 'Frank Black', 'Frank Black', 'Frank Black', 'Frank Black', 'Frank Black', 'Frank Black', 'Frank Black', 'Frank Black', 'Frank Black', 'Frank Black', 'Frank Black', 'Frank Black', 'Frank Black', 'Frank Black', 'Frank Black', 'Black Flag', 'Black Flag', 'Black Flag', 'Black Flag', 'Black Flag', 'Black Flag', 'Bad Religion', 'Bad Religion', 'Bad Religion', 'Bad Religion', 'Bad Religion', 'Mission of Burma', 'Mission of Burma', 'Mission of Burma', 'Mission of Burma', 'Mission of Burma'],[],0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
 	stddevs = [1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0]
 	weights = [1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0]
-	vec2 = fetchNewSongs(user)
+	testCounter = Counter(average[0])
+	print "Count of artists: ", testCounter
 
+	print "Fetching songs to check against..."
+	vec2 = fetch(user, average)
+
+	print "Checking these songs: "
+	for a,b in vec2.iteritems():
+		print a, b
+		logfile.write(str(a))
+		logfile.write(':')
+		logfile.write(str(b))
+		logfile.write('\n')
+
+		print
+
+	logfile.write('%%%%%%%%%%%%%%%%%%%%%%%%%%%')
+
+	print "Ranking songs..."
 	x = rankSongs(vec2, average, stddevs, weights)
 	for a,b in x.iteritems():
 		print "Song id: ", a
 		print "Weighted difference: " ,b
 		print "Sum of difference: ", sum(b)
+		logfile.write("Song id: " + str(a) + '\n')
+		logfile.write("Weighted difference: "  + str(b) + "\n")
+		logfile.write("Sum of difference: " + str(sum(b)) + "\n")
+	
+	logfile.close()
