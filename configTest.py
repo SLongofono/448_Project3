@@ -11,7 +11,7 @@ def configTest():
         return False
 
 
-def testRunner():
+def go():
     print "**************************************"
     print "********create_config TESTING*********"
     print "**************************************"
@@ -19,8 +19,10 @@ def testRunner():
     numPassed = 0
     if configTest():
         numPassed +=1
-        return numTests, numPassed
+
+    print "Tests: %d\nTests passed: %d\nPercentage: %f\n\n" % (numTests,numPassed, (float(numPassed)/numTests)*100)
+    return numTests, numPassed
 
 if __name__ == "__main__":
-	x,y = testRunner()
+	x,y = go()
 	print "Tests: %d\nTests passed: %d\nPercentage: %f\n\n" % (x,y, (float(y)/x)*100)

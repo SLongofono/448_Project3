@@ -115,6 +115,7 @@ def go():
 		if testInsert(tableName=tables[i], insertQuery=insertQueries[i], removeQuery=removeQueries[i]):
 			numPassed += 1
 
+	print "Tests: %d\nTests passed: %d\nPercentage: %f\n\n" % (numTests,numPassed, (100*float(numPassed)/numTests))
 	return numTests, numPassed
 
 if __name__ == "__main__":

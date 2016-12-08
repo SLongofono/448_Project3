@@ -100,7 +100,9 @@ def testClearPlaylist():
                 
                 return (playlistLength == 0)
             
-def testAllPlaylist():
+def go():
+	numTests = 3
+	numPassed = 0
         print "\nTesting ability to create new playlist... "
         test1 = testNewPlaylist()
         print "Passed." if test1 else "Failed."
@@ -113,7 +115,16 @@ def testAllPlaylist():
         test3 = testClearPlaylist()
         print "Passed." if test3 else "Failed."
         
-        return (test1 and test2 and test3)
+	if test1:
+		numPassed += 1
+	if test2:
+		numPassed += 1
+	if test3:
+		numPassed += 1
+
+	print "Number of tests: %d\t\tTests Passed: %d\t\tPrecentage: %f\n" % (numTests,numPassed, ((100.0*numPassed)/numTests))
+        return (numTests, numPassed)
 
 if __name__ == '__main__':
-        testAllPlaylist()
+        x,y = go()
+	print "Number of tests: %d\t\tTests Passed: %d\n" % (x,y)

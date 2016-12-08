@@ -144,7 +144,7 @@ def teststdDev():
 		if(diffList[i] > .001):
 			return False
 	return True
-def mathTest():
+def go():
 	numTests = 0
 	numPassed = 0
 	print "**************************************"
@@ -178,7 +178,9 @@ def mathTest():
 
 		print "\t Standard Deviation Test Passed!"
         numPassed +=1
+	print "Tests: %d\nTests passed: %d\nPercentage: %f\n\n" % (numTests,numPassed, (float(numPassed)/numTests)*100)
 	return numTests,numPassed
+
 if __name__ == "__main__":
-	x,y = mathTest()
+	x,y = go()
 	print "Tests: %d\nTests passed: %d\nPercentage: %f\n\n" % (x,y, (float(y)/x)*100)

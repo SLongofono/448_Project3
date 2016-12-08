@@ -67,7 +67,7 @@ def livenessMutatorTest():
     newValues = [1,2,3,1]
     return (Mutators.livenessMutator(values,1) == newValues)
 
-def MutatorTest():
+def go():
     print "**************************************"
     print "********MUTATOR FUNCTION TESTING******"
     print "**************************************"
@@ -123,7 +123,8 @@ def MutatorTest():
         print "\t livenessMutator Test Passed "
         numPassed += 1
 
+    print "Tests: %d\nTests passed: %d\nPercentage: %f\n\n" % (numTests,numPassed, (float(numPassed)/numTests)*100)
     return numTests, numPassed
 if __name__ == "__main__":
-	x,y = MutatorTest()
+	x,y = go()
 	print "Tests: %d\nTests passed: %d\nPercentage: %f\n\n" % (x,y, (float(y)/x)*100)

@@ -34,7 +34,7 @@ def testGetVectorFromTrack():
                 print "Comparing to expected values"
                 return (featureVector == expectedVector)
 
-def testAllAssembleProfile():
+def go():
         print "\nTesting getUserSongVectors() method... "
         test1 = testGetUserSongVectors()
         print "Passed." if test1 else "Failed."
@@ -42,8 +42,16 @@ def testAllAssembleProfile():
         print "\nTesting getVectorFromTrack() method... "
         test2 = testGetVectorFromTrack()
         print "Passed." if test2 else "Failed."
-        
-        return (test1 and test2)
+        numTests = 2
+	numPassed = 0
+	if test1:
+		numPassed += 1
+	if test2:
+		numPassed += 1
+
+	print "Number of tests: %d\t\tTests Passed: %d\t\tPercentage: %f\n" % (numTests,numPassed,((100.0*numPassed)/numTests))
+        return (numTests, numPassed)
 
 if __name__ == '__main__':
-        testAllAssembleProfile()
+        x,y = go()
+	print "Number of tests: %d\t\tTests Passed: %d\n" % (x,y)
