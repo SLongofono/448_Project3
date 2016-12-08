@@ -1,9 +1,6 @@
 import sys
 import REKTUser
 
-#tests:
-#zip all?
-
 def testAddData(ru):
         testSong = [['Sufjan Stevens', 'The National'], ['Indie folk', 'Indie Rock'], 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0]
         expectedResult = [['Sufjan Stevens', 'The National'], ['Indie folk', 'Indie Rock'], [1.0], [2.0], [3.0], [4.0], [5.0], [6.0], [7.0], [8.0]]
@@ -60,10 +57,6 @@ def go():
             numPassed += 1
         if test3:
             numPassed += 1
-        
-        #temp test
-        
-        #end temp
         
         return (numTests, numPassed)
 
