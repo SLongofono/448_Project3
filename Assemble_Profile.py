@@ -249,8 +249,7 @@ def initializeDB(conn, songVectors):
 
 
 
-	# TODO calculate and populate averages
-	# TODO calculate and populate standard deviations
+
 
 	for song in songVectors:
 		nums = song[2:]
@@ -279,15 +278,42 @@ def initializeDB(conn, songVectors):
 			traceback.print_exc()
 
 
-## updateSongsDB
-# @brief Adds new songs in the user's library to the database
-# TODO write me
-
 
 
 		# Make it so
-		conn.commit()
+	conn.commit()
 
+
+
+
+
+
+## updateSongsDB
+# @brief Adds new songs in the user's library to the database, skipping over duplicates.
+# @params dbInstance, List of lists of song Vectors
+def updateSongsDB(conn, songVectors):
+	for song in songVectors:
+		nums = song[2:]
+		artistQueries = [insertSingle('artists', 'name', x) for x in song[0]]
+		genreQueries = [insertSingle('genres', 'name', x) for x in song[1]]
+		valueQuery = insertMultiple('numerics', labels[2:], song[2:])
+		for i in artistQueries:
+			try:
+				conn.execute(i)
+			except sqlite3.IntegrityError:
+				pass
+
+		for j in genreQueries:
+			try:
+				conn.execute(j)
+
+			except sqlite3.IntegrityError:
+				pass
+
+		try:
+			conn.execute(valueQuery)
+		except:
+			traceback.print_exc()
 
 if __name__ == '__main__':
 	with sqlite3.connect(localDB) as conn:
@@ -296,6 +322,12 @@ if __name__ == '__main__':
 			print "\nGathering song vectors...\n"
 			songVectors = getUserSongVectors(user)
 			initializeDB(conn, songVectors)
+
+		else ():
+			print "\nGathering Song Vectors...\n"
+			print "\nUpdating User Profile...\n"
+			songVectors = getUserSongVectors(user)
+			updateSongsDB(conn,songVectors)
 
 		print "Song numeric vectors :"
 		cursor = conn.execute("SELECT * FROM numerics")
