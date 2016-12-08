@@ -2,10 +2,6 @@ import sys
 import REKTUser
 
 #tests:
-#add
-#get song differences?
-#process profile?
-#save status?
 #zip all?
 
 def testAddData(ru):
@@ -24,17 +20,34 @@ def testAddData(ru):
                 
         return songFound
 
+def testStdDev(ru):
+        ru.calculateStandardDeviations()
+        return (len(ru.stdDevs) == 8)
+    
+def testSongDiffs(ru):
+        testSongVectors = [[['Sufjan Stevens', 'The National'], ['Indie folk', 'Indie Rock'], 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0]]
+        
+        songDiffs = ru.getSongDifferences(testSongVectors)
+        return len(songDiffs[0]) == len(testSongVectors[0])
+
 def go():
-        numTests = 1
+        numTests = 3
         numPassed = 0
     
         #create test user
-        rektUser = REKTUser.User(debug=False)
+        ru = REKTUser.User(debug=False)
         
         #call sub-tests
-        if testAddData(rektUser):
+        if testAddData(ru):
+            numPassed += 1
+        if testStdDev(ru):
+            numPassed += 1
+        if testSongDiffs(ru):
             numPassed += 1
         
+        #temp test
+        
+        #end temp
         
         return (numTests, numPassed)
 
