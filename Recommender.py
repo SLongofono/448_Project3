@@ -26,7 +26,7 @@ songLimit = 25
 ## @var queryLimit
 # @brief number of songs to fetch in a search query
 #
-queryLimit = 10
+queryLimit = 15
 
 ## fetch
 # @brief Convenience wrapper to collect songs from both new and featured songs
