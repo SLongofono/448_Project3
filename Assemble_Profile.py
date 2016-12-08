@@ -29,7 +29,7 @@ labels = ['artists', 'genres', 'popularity', 'acousticness', 'danceability', 'en
 scope = 'user-library-read'
 
 
-##  dumpSongVectors
+## dumpSongVectors
 # @brief Write a list of song vectors to file for processing/debugging
 # @param vectors A list of song vectors in the format produced by getVectorFromTrack()
 # @return void
@@ -59,7 +59,7 @@ def dumpSongVectors(vectors):
     x.close()
 
 
-##  getSongFeatures
+## getSongFeatures
 # @brief Get the track data object for each song from a list of song ids
 # @param sp The handle to the Spotipy wrapper associated with the current user
 # @param ids A list of Spotify song ids
@@ -70,7 +70,7 @@ def getSongFeatures(sp, ids):
 	return sp.audio_features(ids)
 
 
-##  getTracksUserAccount
+## getTracksUserAccount
 # @brief Get the user's songs from their library
 # @param sp The handle to the Spotipy wrapper associated with the current user
 # @param limit Optional integer representing the number of tracks to fetch
@@ -82,7 +82,7 @@ def getTracksUserAccount(sp, limit=20, index=0):
     return sp.current_user_saved_tracks(limit, index)
 
 
-##  getUserSongVectors
+## getUserSongVectors
 # @brief Assembles a list of song vectors for a user
 # @param user The spotify username of the user to fetch songs from
 # @return A list of song vectors in the format produced by getVectorFromTrack()
@@ -131,7 +131,7 @@ def getUserSongVectors(user, numCalls=50, numEntries=20):
 		sys.exit()
 
 
-##  getVectorFromTrack
+## getVectorFromTrack
 # @brief Assembles a vector of feature values for a track
 # @param sp The handle to the Spotipy wrapper associated with the current user
 # @param features A Spotify feature object associated with the track in question
@@ -171,7 +171,13 @@ def getVectorFromTrack(sp, features, artists):
 
 
 ## insertMultiple
-# @brief Prep an insert SQL query for matched key-value pairs
+# @brief Prep an insert SQL query for multipe matched key-value pairs
+# @param table A string representing the name of the table for the query
+# @param keys A list of strings representing column names within the table
+# @param vals A list of values corresponding to the columns passed in
+# @return A list of strings representing SQL insert queries using the keys and values passed in
+# @details This method prepares strings for SQL insert queries.  It is assumed that the keys and
+#	values are aligned.
 def insertMultiple(table, keys, vals):
 	# Join not smart enough to cast so we need to do it manually
 	keystr = '(' + ','.join(map(str, keys)) + ')'
@@ -180,12 +186,24 @@ def insertMultiple(table, keys, vals):
 
 ## insertSingle
 # @brief Prep an insert query for a single key-value pair
+# @param table A string representing the name of the table for the query
+# @param keys A list of strings representing column names within the table
+# @param vals A list of values corresponding to the columns passed in
+# @return A string representing a SQL insert query using the keys and values passed in
+# @details This method prepares a string for a SQL insert query.  It is assumed that the keys and
+#	values are aligned.
 def insertSingle(table, key, val):
 	return "INSERT INTO " + table + " (" + str(key) + ") VALUES ('" + val + "');"
 
 
 ## initializeDB
 # @brief Set up and populate a database of song vectors from the user's library
+# @param conn A SQLite3 connection object attached to an open database file
+# @param songVectors A list of song vectors to be added to the new database
+# @return void
+# @details This method is responsible for creating a local database with tables to store song feature
+#	vectors, artists, genres, standard deviations, and user profile values.  It is assumed that
+#	the tables do not already exist.
 def initializeDB(conn, songVectors):
 
 	"""Schema
@@ -210,7 +228,7 @@ def initializeDB(conn, songVectors):
 						);""")
 
 	# Create table for artists
-	conn.execute("""CREATE TABLE artists (ID INTEGER PRIMARY KEY, name TEXT NOT NULL UNIQUE);""")
+	conn.execute("""CREATE TABLE artists (ID INTEGER PRIMARY KEY, name TEXT NOT NULL);""")
 
 	# Create table for genres
 	conn.execute("""CREATE TABLE genres (ID INTEGER PRIMARY KEY, name TEXT NOT NULL UNIQUE);""")
@@ -248,9 +266,6 @@ def initializeDB(conn, songVectors):
 						valence DECIMAL NOT NULL);""")
 
 
-
-
-
 	for song in songVectors:
 		nums = song[2:]
 		artistQueries = [insertSingle('artists', 'name', x) for x in song[0]]
@@ -260,7 +275,7 @@ def initializeDB(conn, songVectors):
 			try:
 				conn.execute(i)
 
-			# Catch duplicates and ignore
+			# Catch duplicates and move on
 			except sqlite3.IntegrityError:
 				pass
 
@@ -268,7 +283,7 @@ def initializeDB(conn, songVectors):
 			try:
 				conn.execute(j)
 
-			# Catch duplicates and ignore
+			# Catch duplicates and move on
 			except sqlite3.IntegrityError:
 				pass
 
@@ -277,10 +292,7 @@ def initializeDB(conn, songVectors):
 		except:
 			traceback.print_exc()
 
-
-
-
-		# Make it so
+	# Make it so
 	conn.commit()
 
 
@@ -315,6 +327,7 @@ def updateSongsDB(conn, songVectors):
 		except:
 			traceback.print_exc()
 
+
 if __name__ == '__main__':
 	with sqlite3.connect(localDB) as conn:
 		if (not db_exists):
@@ -329,6 +342,7 @@ if __name__ == '__main__':
 			songVectors = getUserSongVectors(user)
 			updateSongsDB(conn,songVectors)
 
+		# Give some feedback for debuggin
 		print "Song numeric vectors :"
 		cursor = conn.execute("SELECT * FROM numerics")
 		for i in cursor:
