@@ -1,0 +1,107 @@
+\documentclass{roffin}
+\usepackage{graphicx} 
+
+\begin{document}
+
+\title{Usage Manual: Spotify Recommendation Engine}
+
+\author{Grant Jurgensen, Stephen Longofono, and Stephen Wiss}
+
+\maketitle
+
+This document serves as a detailed walkthrough of how to use our Spotify recommendation software. While the program is largely autonomous after it is run, it does require a large amount of user interaction during the setup phase. Here, we provide step by step instructions, from downloading the code, to getting it up and running. This document is meant to be followed in the order presented. While it may be possible to complete some sections out of order, it is recommended you follow along with the instructions here to avoid confusion.
+
+
+\section{Download the Source Code}
+To download the source code from the Github repository, you can either use a web browser, or a terminal. If you are familiar with the linux terminal, and already have git installed, that approach will likely be quicker. Otherwise, use a web browser.
+
+\subsection{Terminal Approach}
+If you are using the terminal approach, open the terminal, and navigate to the directory in which you would like to save the program's source code . If you do not already have git installed, do so now. The method of doing so will depend on the environment you are working in (if you are unsure or unfamiliar with the terminal in general, you may want to use a browser for this part instead). Now, enter the command:
+\newline
+
+\hspace{1cm} git clone https://github.com/Slongofono/448\_Project4
+
+\hfill
+\newline
+This will download the source code into a folder called `448\_Project4' 
+
+\subsection{Web Browser Approach}
+If you would rather download the source code via a web browser, open that web browser now and enter the following URL: 
+\newline
+
+\hspace{1cm} https://github.com/Slongofono/448\_Project3
+
+\hfill
+\newline
+In the upper-right is a green button, labeled `clone or download'. Click it, and then click `download zip' to download the program’s source code.
+
+\includegraphics{pic1}
+
+If your browser prompts you to open or save, select save, and choose a destination. Lastly, navigate to where you saved the source code in your file browser, and unzip the contents.
+
+\section{Create Spotify Developer Credentials}
+
+This application requires you have a Spotify account with developer credentials. If you do not already have a Spotify account, create one now. Next, open a web browser, and enter the URL:  
+\newline
+
+\hspace{1cm} https://developer.spotify.com/my-applications/
+
+\hfill
+\newline
+This will take you to Spotify's developer applications page. Log in, and then in the upper-right of the screen, click `Create an App'. You can give the app whatever name and description you like. On the next page, under the `Redirect URIs' section, add `http://localhost:8888/callback', and then save changes. Your web page should look similar to this: 
+
+\includegraphics[scale=.5]{pic2}
+
+The `Client ID', `Client Secret', and `Redirect URIs' make up our Spotify credentials. Make note of them, as we will need them in the setup phase.
+
+
+\section{Setup} 
+
+Open your terminal and navigate to where you downloaded the program's source code. Now, run the setup script by entering
+\newline
+
+\hspace{1cm} ./setup.sh
+
+\hfill
+\newline
+If you get a message claiming you do not have permission, try entering
+\newline
+
+\hspace{1cm} chmod + setup.sh
+
+\hfill
+\newline
+ and the try again. You will then be prompted to enter you Spotify username, followed by your Spotify developer credentials. These will be the `Client Id', `Client Secret', and `Redirect URIs' we noted before. The prompts should look like this:
+ 
+ \includegraphics[scale=.5]{pic3}
+ 
+ After you enter your credentials, it will install some necessary prerequisites. No user interaction is required here. If you forgot your credentials, you can find them again by returning to the Spotify developer application page, at the URL: 
+\newline
+
+\hspace{1cm} https://developer.spotify.com/my-applications.
+
+\hfill
+\newline
+If you followed along in step 2 you should have an application listed here. Click it, and you should see your credentials. If no application is listed here, you have not created a Spotify app. Go back to step 2 to get your Spotify developer credentials.
+
+\section{Running the Program} 
+From the terminal, create a virtual environment by entering:
+\newline
+
+\hspace{1cm} source spottie/bin/activate
+
+\hfill
+\newline
+The purpose of using a virtual environment here is to allow us to use python modules that we would otherwise be unable to install. Finally, to run the program, enter the following command:
+\newline
+
+\hspace{1cm} python run.py
+
+\hfill
+\newline
+The program will take a few minutes to begin assembling your profile. Once that is finished, it will begin creating a playlist for you. No user input is required during this time. Once the program has finished, simply open your Spotify account, and there should be a playlist called `448 Demo' with 100 songs, all recommended for you. 
+
+Once you see the playlist, you're done! You have successfully set up and run the program, you can now enjoy your recommended music playlist. Whenever you want a new playlist to be generated, simply run `run.py' again. Please note, if you try to generate multiple playlists per day, you may find significant overlap between them. This is because we pull from new releases, as well as currently popular or featured songs. Therefore, we suggest waiting a couple days between generating playlists in order to avoid repeat suggestions.
+
+
+\end{document}
