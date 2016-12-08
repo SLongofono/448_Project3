@@ -18,14 +18,26 @@ from collections import Counter
 user = config_obj.get_user()
 scope = 'user-library-read'
 
-# number of songs to fetch
+## @var songLimit
+# @brief number of songs to fetch for any given call to Spotify API
+#
 songLimit = 25
 
-# number of songs to fetch in a search query 
+## @var queryLimit
+# @brief number of songs to fetch in a search query
+#
 queryLimit = 10
 
 ## fetch
 # @brief Convenience wrapper to collect songs from both new and featured songs
+# @param user a user credentials config_obj for authentication
+# @param profile A user profile vector to pull artists and genres from
+# @return A dictionary of the form: spotify track id:features vector
+# @details This method will gather songs by the three methods we have defined, namely
+#	from new releases, featured songs, and songs that match a query for an artist.
+#	The results from each are aggregated and returned as a dictionary of the form:
+#	spotify track id:features vector
+#
 def fetch(user, profile):
 	results = {}
 	results.update(fetchNewSongs(user))
@@ -36,6 +48,14 @@ def fetch(user, profile):
 
 ## fetchNewSongs
 # @brief Gather and process a list of new songs to be compared with the user profile
+# @param user a user credentials config_obj for authentication
+# @param lim An optional parameter specifying how many results should be requested from Spotify
+# @return A dictionary of the form: spotify track id:features vector
+# @details This method gathers songs for comparison from Spotify's new releases.  Using a random
+#	integer offset from the beginning of the Spotify new releases list (maintained on their end),
+#	lim results are gathered and parsed into a dictionary of the following form:
+#	spotify track id:features vector
+#
 def fetchNewSongs(user, lim=songLimit):
 	usageToken = util.prompt_for_user_token(username=user['username'],
 						client_id=user['client_id'],
@@ -61,6 +81,14 @@ def fetchNewSongs(user, lim=songLimit):
 
 ## fetchFeaturedSongs
 # @brief Gather and process a list of featured songs to be compared with the user profile
+# @param user a user credentials config_obj for authentication
+# @param lim An optional parameter specifying how many results should be requested from Spotify
+# @return A dictionary of the form: spotify track id:features vector
+# @details This method gathers songs for comparison from Spotify's featured songs.  Using a random
+#	integer offset from the beginning of the Spotify featured songs list (maintained on their end),
+#	lim results are gathered and parsed into a dictionary of the following form:
+#	spotify track id:features vector
+#
 def fetchFeaturedSongs(user, lim=songLimit):
 	usageToken = util.prompt_for_user_token(username=user['username'],
 						client_id=user['client_id'],
@@ -91,7 +119,16 @@ def fetchFeaturedSongs(user, lim=songLimit):
 
 
 ## fetchFromQuery
-# @ brief Uses the Spotify search API on the three highest frequency artists in the user profile
+# @brief Uses the Spotify search API on the three highest frequency artists in the user profile
+# @param user a user credentials config_obj for authentication
+# @param profile A user profile vector to pull artists and genres from
+# @param lim An optional parameter specifying how many results should be requested from Spotify
+# @return A dictionary of the form: spotify track id:features vector
+# @details This method gathers songs for comparison from Spotify's search API.  A histogram of the
+#	user's most frequent artists is used to select the three most frequent.  These artists are
+#	used as search queries, and lim results are gathered and parsed into a dictionary of the
+#	following form:	spotify track id:features vector
+#
 def fetchFromQuery(user, profile, lim=songLimit):
 	usageToken = util.prompt_for_user_token(username=user['username'],
 						client_id=user['client_id'],
@@ -118,7 +155,17 @@ def fetchFromQuery(user, profile, lim=songLimit):
 
 ## filterSongs
 # @brief Apply the 2 sigma filter to a list of songs to rule out outliers
-# @details Assumes the songsDict is an ordered dictionary
+# @param songsDict An ordered dictionary of the form spotify track id: features
+# @param averages a user profile vector containing the artists, genres, and average
+#	features to be compare the contents of songsDict against
+# @param stddevs A list of the standard deviations of song features for the user
+#	averages passed in
+# @return A dictionary of the form spotify track id:features vector
+# @details This method is a wrapper that is used to maintain dictionary
+#	associations while applying the filter2Sigma() method.  It is not strictly
+#	necessary to separate the operation, but provides some separation of
+#	responsibilities to generalize filter2Sigma().
+#
 def filterSongs(songsDict, averages, stddevs):
 	#songVecs = [x[2:] for x in songsDict.values()]
 	songVecs = songsDict.values()
@@ -132,32 +179,29 @@ def filterSongs(songsDict, averages, stddevs):
 
 ## rankSongs
 # @brief Rank filtered list of songs by difference from mean in ascending order
-# @details Assumes the songsDict is an ordered dictionary
+# @param songsDict An ordered dictionary of the form spotify track id: features
+# @param averages a user profile vector containing the artists, genres, and average
+#	features to be compare the contents of songsDict against
+# @param stddevs A list of the standard deviations of song features for the user
+#	averages passed in
+# @param weights A list of doubles representing the weight of each feature, as calculated
+#	with the stddevs parameter passed in
+# @details This method will filter, weight, and sort songs by difference from the user profile
+#	(the averages parameter).
+#
 def rankSongs(songsDict, averages, stddevs, weights):
 	# filter out garbage
 	newDict = filterSongs(songsDict, averages, stddevs)
 
-	# compute difference and apply weights
-	songVecs = newDict.values()
-	songIds = newDict.keys()
-	differences = map(functools.partial(Variance.getWeightedDifference, base=averages, weighting=weights), songVecs)
 	result = {}
-	for i in range(len(differences)):
-		result[songIds[i]] = differences[i]
 
-	# sort results
-	return OrderedDict(sorted(result.items(), key=lambda t: t[1]))
+	# compute difference and apply weights
+	for a,b in newDict.iteritems():
+		result[a] = Variance.getWeightedDifference(base=averages, weighting=weights, new=b)
 
-## updateRequired
-# @brief Determine if a user's library and songs need to be updated
-def updateRequired():
-	return
+	# "Sort" the dictionary based on each key's first member
+	return OrderedDict(sorted(result.items(), key=lambda t: sum(t[1])))
 
-## updateUser
-# @brief Re-evaluates the user's library, profile, and standard deviations
-#
-def updateUser():
-	return
 
 if __name__ == "__main__":
 
@@ -193,5 +237,5 @@ if __name__ == "__main__":
 		logfile.write("Song id: " + str(a) + '\n')
 		logfile.write("Weighted difference: "  + str(b) + "\n")
 		logfile.write("Sum of difference: " + str(sum(b)) + "\n")
-	
+
 	logfile.close()
