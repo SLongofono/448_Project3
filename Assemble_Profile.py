@@ -323,7 +323,7 @@ if __name__ == '__main__':
 			songVectors = getUserSongVectors(user)
 			initializeDB(conn, songVectors)
 
-		else ():
+		else:
 			print "\nGathering Song Vectors...\n"
 			print "\nUpdating User Profile...\n"
 			songVectors = getUserSongVectors(user)
