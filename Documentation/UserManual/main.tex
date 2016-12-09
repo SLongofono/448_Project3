@@ -9,8 +9,9 @@
 
 \maketitle
 
-This document serves as a detailed walkthrough of how to use our Spotify recommendation software. While the program is largely autonomous after it is run, it does require a large amount of user interaction during the setup phase. Here, we provide step by step instructions, from downloading the code, to getting it up and running. This document is meant to be followed in the order presented. While it may be possible to complete some sections out of order, it is recommended you follow along with the instructions here to avoid confusion.
+This document serves as a detailed walkthrough of how to use our Spotify recommendation software. While the program is largely autonomous after it is run, it does require a large amount of user interaction during the setup phase. Here, we provide step by step instructions, from downloading the code, to getting it up and running. The following steps (sections?) are provided sequentially, and should be completed in the order presented. The only exception is the final section, `Troubleshooting', which you should check if you are experiencing some sort of problem, or whenever directed there by the instructions. While it may be possible to complete some sections out of order, it is recommended you follow the instructions provided to avoid confusion.
 
+Our program was designed and tested almost exclusively on Fedora Linux, and this is the officially supported platform. While it may work on other operating systems, it may also require alternative or additional steps to setup compared to our instructions below.
 
 \section{Download the Source Code}
 To download the source code from the Github repository, you can either use a web browser, or a terminal. If you are familiar with the linux terminal, and already have git installed, that approach will likely be quicker. Otherwise, use a web browser.
@@ -35,7 +36,12 @@ If you would rather download the source code via a web browser, open that web br
 \newline
 In the upper-right is a green button, labeled `clone or download'. Click it, and then click `download zip' to download the program’s source code.
 
-\includegraphics{pic1}
+\begin{figure}[!h]
+    \centering
+    \includegraphics[scale=1.05]{pic1}
+    \caption{A screenshot demonstrating where and how to download from the Github website.}
+    \label{fig:fig1}
+\end{figure}
 
 If your browser prompts you to open or save, select save, and choose a destination. Lastly, navigate to where you saved the source code in your file browser, and unzip the contents.
 
@@ -48,9 +54,14 @@ This application requires you have a Spotify account with developer credentials.
 
 \hfill
 \newline
-This will take you to Spotify's developer applications page. Log in, and then in the upper-right of the screen, click `Create an App'. You can give the app whatever name and description you like. On the next page, under the `Redirect URIs' section, add `http://localhost:8888/callback', and then save changes. Your web page should look similar to this: 
+This will take you to Spotify's developer applications page. Log in, and then in the upper-right of the screen, click `Create an App'. You can give the app whatever name and description you like. On the next page, under the `Redirect URIs' section, add `http://localhost:8888/callback', and then save changes.
 
-\includegraphics[scale=.5]{pic2}
+\begin{figure}[!h]
+    \centering
+    \includegraphics[scale=0.5]{pic2}
+    \caption{An example of the webpage for Spotify Developer Applications. The `Client ID' and `Client Secret' are blurred for the screenshot, as they are intended not to be shared.}
+    \label{fig:fig2}
+\end{figure}
 
 The `Client ID', `Client Secret', and `Redirect URIs' make up our Spotify credentials. Make note of them, as we will need them in the setup phase.
 
@@ -71,9 +82,14 @@ If you get a message claiming you do not have permission, try entering
 
 \hfill
 \newline
- and the try again. You will then be prompted to enter you Spotify username, followed by your Spotify developer credentials. These will be the `Client Id', `Client Secret', and `Redirect URIs' we noted before. The prompts should look like this:
+ and then try again. You will then be prompted to enter you Spotify username, followed by your Spotify developer credentials. These will be the `Client Id', `Client Secret', and `Redirect URIs' we noted before.
  
- \includegraphics[scale=.5]{pic3}
+\begin{figure}[!h]
+    \centering
+    \includegraphics[scale=0.5]{pic3}
+    \caption{A screenshot of the terminal after Spotify developer credentials have been entered and verified.}
+    \label{fig:fig3}
+\end{figure}
  
  After you enter your credentials, it will install some necessary prerequisites. No user interaction is required here. If you forgot your credentials, you can find them again by returning to the Spotify developer application page, at the URL: 
 \newline
@@ -99,9 +115,19 @@ The purpose of using a virtual environment here is to allow us to use python mod
 
 \hfill
 \newline
-The program will take a few minutes to begin assembling your profile. Once that is finished, it will begin creating a playlist for you. No user input is required during this time. Once the program has finished, simply open your Spotify account, and there should be a playlist called `448 Demo' with 100 songs, all recommended for you. 
+The program will take a few minutes to begin assembling your profile. Once that is finished, it will begin creating a playlist for you. No user input should be necessary during this time. However, the program might stop to request authentication, in which case refer to section 5, `Troubleshooting', to learn how to continue.
 
-Once you see the playlist, you're done! You have successfully set up and run the program, you can now enjoy your recommended music playlist. Whenever you want a new playlist to be generated, simply run `run.py' again. Please note, if you try to generate multiple playlists per day, you may find significant overlap between them. This is because we pull from new releases, as well as currently popular or featured songs. Therefore, we suggest waiting a couple days between generating playlists in order to avoid repeat suggestions.
+When the program has finished, simply open your Spotify account, and there should be a playlist called `448 Demo' with 100 songs, all recommended for you. Once you see this playlist, you're done! You have successfully set up and run the program, you can now enjoy your recommended music playlist. Whenever you want a new playlist to be generated, simply run `run.py' again. Please note, if you try to generate multiple playlists per day, you may find significant overlap between them. This is because we pull from new releases, as well as currently popular or featured songs. Therefore, we suggest waiting a couple days between generating playlists in order to avoid repeat suggestions.
 
+\section{Troubleshooting} 
+Occasionally, the Spotify API will fail to authenticate properly, and interrupts the flow of the program to request you manually authenticate. When this happens, it will provide you with a URL, which you will want to visit in your browser.
+
+[insert pic of prompt?]
+
+If you see a Spotify login screen, go ahead and login. You should be redirected to a new URL, which will give an `Unable to connect' message. If you didn't see a login, that means Spotify remembered your login and has hopefully proceeded to the `Unable to connect' screen already. In either case, copy the URL you were redirected to, paste it into your terminal, and then press enter. The program should then resume action. 
+
+[pic of entered url?]
+
+This problem is most likely to occur when running `run.py', and may appear multiple times during its execution.
 
 \end{document}
