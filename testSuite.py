@@ -1,4 +1,5 @@
 import os
+import testREKTUser
 import testAssembleProfile
 import testDB
 import testMath
@@ -6,8 +7,13 @@ import testPlaylist
 import mutatorTest
 import configTest
 
+
 numTests = 0
 numPassed = 0
+
+x,y = testREKTUser.go()
+numTests += x
+numPassed += y
 
 x,y = testAssembleProfile.go()
 numTests += x
