@@ -302,7 +302,13 @@ def initializeDB(conn, songVectors):
 
 ## updateSongsDB
 # @brief Adds new songs in the user's library to the database, skipping over duplicates.
-# @params dbInstance, List of lists of song Vectors
+# @param conn, a handle into a SQLite3 local database
+# @param songVectors A list comprised of song vectors, of the form [[artists:string], [genres:string], 10*float]
+# @return void
+# @details This method is responsible for updating a user's library in the local database.  This method
+#	is inefficient, but the alternative is manually checking that each song locally is in the user's
+#	tracks, resulting in an API call for each (much worse).  songVectors are assumed to be in the proper format
+#
 def updateSongsDB(conn, songVectors):
 	for song in songVectors:
 		nums = song[2:]
@@ -326,6 +332,8 @@ def updateSongsDB(conn, songVectors):
 			conn.execute(valueQuery)
 		except:
 			traceback.print_exc()
+		# Save all changes
+		conn.commit()
 
 
 if __name__ == '__main__':
@@ -342,7 +350,7 @@ if __name__ == '__main__':
 			songVectors = getUserSongVectors(user)
 			updateSongsDB(conn,songVectors)
 
-		# Give some feedback for debuggin
+		# Give some feedback for debugging
 		print "Song numeric vectors :"
 		cursor = conn.execute("SELECT * FROM numerics")
 		for i in cursor:
