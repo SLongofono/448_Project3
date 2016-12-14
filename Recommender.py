@@ -142,7 +142,7 @@ def fetchFromQuery(user, profile, lim=songLimit):
 		counts = Counter(profile[0])
 		topThreeArtists = [x[0] for x in counts.most_common(3)]
 		for artist in topThreeArtists:
-			results = sp.search(str(artist), limit=lim)
+			results = sp.search(str(artist), limit=lim, offset=random.randint(0,10))
 			print results
 			for track in results['tracks']['items']:
 				try:
