@@ -1,3 +1,6 @@
+## @file PlaylistGenerator.py
+# @brief Tools and methods for creating, deleting, and interaction with Spotify playlists
+#
 import sys
 import spotipy
 import spotipy.util as util
