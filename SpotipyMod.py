@@ -1,11 +1,13 @@
-'''This file is a hack to work around a poor choice made by the Spotipy developer - He used a call
-that only works on OSX, forcing PC/Nix users to copy and paste an url from the command line to
-complete the initial authorization process.
-
-Credit to Github user sepehr for his quick fix, which has been sitting on the issues page untouched for 6 months...
-https://github.com/plamere/spotipy/pull/30
-Accessed November 2016
-'''
+## @file SpotifyMod.py
+# @brief Customizes Spotipy to fail less often
+# details This file is a hack to work around a poor choice made by the Spotipy developer - He used a call
+#	that only works on OSX, forcing PC/Nix users to copy and paste an url from the command line to
+#	complete the initial authorization process.  The problem still comes up periodically, but with the 
+#	fix in place, it happens less often (read: not every time)
+#	
+#	Credit to Github user sepehr for his quick fix, which has been sitting on the issues page untouched for 6 months...
+#	https://github.com/plamere/spotipy/pull/30
+#	Accessed November 2016
 import os
 
 if os.path.exists('spottie/lib64/python2.7/site-packages/spotipy/util.py'):
