@@ -1,3 +1,6 @@
+## @file config_obj.py
+# @brief Defines a simple container for user and authentication details, as populated from a configuration file
+#
 import ConfigParser
 
 config = ConfigParser.RawConfigParser()
