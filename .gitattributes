@@ -1,2 +1,2 @@
-Documentation/* linguist-documentation=false
-docs/formatter.rb linguist-documentation=false
+Documentation/* linguist-documentation
+docs/formatter.rb linguist-documentation
