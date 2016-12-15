@@ -18,3 +18,5 @@ Our processing of popularity skews results, such that a user with a preference f
 Authentication fails intermittently, and makes inappropriate requests for logins.  This appears to be a problem in the Python wrapper for the Spotify API, and will not be resolved because an issue is already open for it on the developer's repository.
 
 The testing suite requires multiple logins, again due to errors in the Spotipy source.
+
+Song names, artists, or genres with punctuation cause errors with our database entry, and can cause the Assemble_Profile.py script to fail.  A temporary workaround is in place to strip the name of apostrophes, but other punctuation will still halt execution.
